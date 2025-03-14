@@ -1,26 +1,36 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Flex,
   Heading,
-  Text,
+  Skeleton,
+  Stack,
+  Center,
   useColorModeValue
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
+import { FaRobot } from 'react-icons/fa';
+import TypedText from './TypedText';
 
 const MotionBox = motion(Box);
-const MotionHeading = motion(Heading);
-const MotionText = motion(Text);
 
 const AboutPage: React.FC = () => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // We reuse the same background gradient as home, for visual consistency
   const gradientBg = useColorModeValue(
     'linear(to-r, teal.300, blue.400)',
     'linear(to-r, teal.600, blue.800)'
   );
 
   return (
-    <Box position="relative" overflow="hidden" minH="100vh">
-      {/* Background Gradient */}
+    <Box position="relative" minH="100vh" overflow="hidden">
+      {/* Background gradient */}
       <Box
         position="absolute"
         top={0}
@@ -31,54 +41,44 @@ const AboutPage: React.FC = () => {
         zIndex={-2}
       />
 
-      {/* Decorative Blurred Circle */}
-      <MotionBox
-        position="absolute"
-        top="-100px"
-        right="-100px"
-        w="300px"
-        h="300px"
-        bg="whiteAlpha.400"
-        borderRadius="50%"
-        zIndex={-1}
-        filter="blur(80px)"
-        initial={{ opacity: 0, scale: 0 }}
-        animate={{ opacity: 0.6, scale: 1 }}
-        transition={{ duration: 2 }}
-      />
-
       <Flex
         direction="column"
         justify="center"
         align="center"
+        minH="100vh"
+        px={4}
         textAlign="center"
         color="white"
-        px={4}
-        minH="100vh"
+        position="relative"
+        zIndex={1}
       >
-        <MotionHeading
-          fontSize={{ base: '3xl', md: '5xl' }}
-          mb={4}
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          Who We Are
-        </MotionHeading>
-
-        <MotionText
-          fontSize={{ base: 'md', md: 'xl' }}
-          maxW="700px"
-          mx="auto"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-        >
-          We’re a passionate outsourcing team offering software automation, data
-          scraping, AI-driven solutions, and chatbots to clients around the world.
-          Although we’re at the start of our journey, our dedication to delivering
-          top-notch results is unwavering.
-        </MotionText>
+        {loading ? (
+          <Stack spacing={4} maxW="600px" mx="auto">
+            <Center>
+              <MotionBox
+                animate={{ rotate: 360 }}
+                transition={{ repeat: Infinity, duration: 2, ease: 'linear' }}
+              >
+                <FaRobot size={50} />
+              </MotionBox>
+            </Center>
+            <Skeleton height="30px" />
+            <Skeleton height="20px" />
+            <Skeleton height="20px" />
+          </Stack>
+        ) : (
+          <>
+            <Heading fontSize={{ base: '3xl', md: '5xl' }} mb={4}>
+              <TypedText text="About Our Company" speed={30} />
+            </Heading>
+            <TypedText text="
+              We’re a passionate outsourcing team offering software automation,
+              AI-driven solutions, and scraping. Even though we’re at the start
+              of our journey, our dedication to delivering top-notch results is
+              unwavering.
+            " />
+          </>
+        )}
       </Flex>
     </Box>
   );

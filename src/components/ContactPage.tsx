@@ -1,31 +1,40 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Flex,
   Heading,
-  Text,
-  Button,
+  Skeleton,
+  Stack,
   Input,
   Textarea,
-  Stack,
+  Button,
+  Center,
   useColorModeValue
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
+import { FaEnvelope } from 'react-icons/fa';
+import TypedText from './TypedText';
 
 const MotionBox = motion(Box);
-const MotionHeading = motion(Heading);
-const MotionText = motion(Text);
-const MotionButton = motion(Button);
 
 const ContactPage: React.FC = () => {
+  const [loading, setLoading] = useState(true);
+
+  // Simulate loading for 1.5s
+  useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 1500);
+    return () => clearTimeout(t);
+  }, []);
+
+  // Same background gradient as HomePage
   const gradientBg = useColorModeValue(
     'linear(to-r, teal.300, blue.400)',
     'linear(to-r, teal.600, blue.800)'
   );
 
   return (
-    <Box position="relative" overflow="hidden" minH="100vh">
-      {/* Background Gradient */}
+    <Box position="relative" minH="100vh" overflow="hidden">
+      {/* Background gradient */}
       <Box
         position="absolute"
         top={0}
@@ -36,82 +45,62 @@ const ContactPage: React.FC = () => {
         zIndex={-2}
       />
 
-      {/* Decorative Blurred Circle */}
-      <MotionBox
-        position="absolute"
-        top="-100px"
-        right="-100px"
-        w="300px"
-        h="300px"
-        bg="whiteAlpha.400"
-        borderRadius="50%"
-        zIndex={-1}
-        filter="blur(80px)"
-        initial={{ opacity: 0, scale: 0 }}
-        animate={{ opacity: 0.6, scale: 1 }}
-        transition={{ duration: 2 }}
-      />
-
       <Flex
         direction="column"
         justify="center"
         align="center"
+        minH="100vh"
+        px={4}
         textAlign="center"
         color="white"
-        px={4}
-        minH="100vh"
+        position="relative"
+        zIndex={1}
       >
-        <MotionHeading
-          fontSize={{ base: '3xl', md: '5xl' }}
-          mb={4}
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          Contact Us
-        </MotionHeading>
-
-        <MotionText
-          fontSize={{ base: 'md', md: 'xl' }}
-          maxW="700px"
-          mx="auto"
-          mb={8}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-        >
-          Ready to learn how automation, scrapers, or AI chatbots can help your
-          business? Let’s talk!
-        </MotionText>
-
-        <Box
-          bg="whiteAlpha.200"
-          p={6}
-          borderRadius="md"
-          w="full"
-          maxW="500px"
-          mx="auto"
-        >
-          <Stack spacing={3} textAlign="left">
-            <Input placeholder="Your Name" bg="whiteAlpha.800" color="black" />
-            <Input placeholder="Your Email" bg="whiteAlpha.800" color="black" />
-            <Textarea
-              placeholder="How can we help?"
-              bg="whiteAlpha.800"
-              color="black"
-            />
-            <MotionButton
-              colorScheme="blackAlpha"
-              bg="gray.900"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1 }}
-              _hover={{ bg: 'gray.700' }}
-            >
-              Send Message
-            </MotionButton>
+        {loading ? (
+          <Stack spacing={4} maxW="600px" mx="auto">
+            <Center>
+              {/* Rotating Envelope Icon */}
+              <MotionBox
+                animate={{ rotate: 360 }}
+                transition={{ repeat: Infinity, duration: 2, ease: 'linear' }}
+              >
+                <FaEnvelope size={50} />
+              </MotionBox>
+            </Center>
+            {/* Skeleton placeholders */}
+            <Skeleton height="30px" />
+            <Skeleton height="20px" />
+            <Skeleton height="40px" />
           </Stack>
-        </Box>
+        ) : (
+          <>
+            <Heading fontSize={{ base: '3xl', md: '5xl' }} mb={4}>
+              <TypedText text="Contact Us" speed={30} />
+            </Heading>
+            <TypedText text="
+              Ready to learn how our outsourcing services can help? 
+              Drop us a line below and we’ll be in touch!
+            " />
+            <Stack spacing={3} mt={6} maxW="400px" mx="auto" w="full">
+              <Input
+                placeholder="Your Name"
+                bg="whiteAlpha.800"
+                color="black"
+              />
+              <Input
+                placeholder="Your Email"
+                bg="whiteAlpha.800"
+                color="black"
+              />
+              <Textarea
+                placeholder="Your Message"
+                bg="whiteAlpha.800"
+                color="black"
+              />
+              <Button colorScheme="teal">Send Message</Button>
+            </Stack>
+          </>
+        )}
       </Flex>
     </Box>
   );

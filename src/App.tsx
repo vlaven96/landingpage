@@ -1,31 +1,38 @@
 import React, { useState } from 'react';
 import { Box } from '@chakra-ui/react';
 import Navbar from './components/Navbar';
+import Chat from './components/Chat';
 import HomePage from './components/HomePage';
 import AboutPage from './components/AboutPage';
 import ServicesPage from './components/ServicesPage';
 import TeamPage from './components/TeamPage';
 import ContactPage from './components/ContactPage';
-import Chat from './components/Chat';
 
 export type PageName = 'home' | 'about' | 'services' | 'team' | 'contact';
 
 const App: React.FC = () => {
-  // The pages that are "unlocked" (available in the nav)
+  // The pages that are unlocked & visible in the navbar
   const [unlockedPages, setUnlockedPages] = useState<PageName[]>(['home']);
-  // The currently displayed page
+  // Current displayed page
   const [currentPage, setCurrentPage] = useState<PageName>('home');
 
-  // Called by Chat whenever user triggers a new page
+  // Called by chat when user enters a command
   const unlockPage = (page: PageName) => {
-    setUnlockedPages((prev) => {
-      if (!prev.includes(page)) return [...prev, page];
-      return prev;
-    });
-    setCurrentPage(page); // Also navigate to that page
+    // Add the page to unlocked list if not already present
+    setUnlockedPages((prev) =>
+      prev.includes(page) ? prev : [...prev, page]
+    );
+    // Also navigate to it
+    setCurrentPage(page);
   };
 
-  // Render the current page
+  // Called by navbar or chat to switch pages (already unlocked)
+  const handleNavigate = (page: PageName) => {
+    if (unlockedPages.includes(page)) {
+      setCurrentPage(page);
+    }
+  };
+
   const renderPage = () => {
     switch (currentPage) {
       case 'home':
@@ -44,18 +51,16 @@ const App: React.FC = () => {
   };
 
   return (
-    <Box minH="100vh" pb="200px" position="relative">
-      {/* Top navigation bar */}
+    <Box minH="100vh" position="relative">
+      {/* Navbar shows only unlocked pages */}
       <Navbar
         unlockedPages={unlockedPages}
         currentPage={currentPage}
-        onNavigate={setCurrentPage}
+        onNavigate={handleNavigate}
       />
-
       {/* Render whichever page is active */}
       {renderPage()}
-
-      {/* Bottom chat to unlock more pages */}
+      {/* Chat that can unlock new pages */}
       <Chat onUnlockPage={unlockPage} />
     </Box>
   );

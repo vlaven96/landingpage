@@ -1,13 +1,7 @@
 import React, { useState } from 'react';
+import { Box, Flex, Button, Input, Text, useColorModeValue, useColorMode } from '@chakra-ui/react';
+import { motion } from 'framer-motion';
 import { PageName } from '../App';
-import {
-  Box,
-  Flex,
-  Button,
-  Input,
-  Text,
-  useColorModeValue
-} from '@chakra-ui/react';
 
 interface ChatProps {
   onUnlockPage: (page: PageName) => void;
@@ -18,28 +12,33 @@ type Message = {
   text: string;
 };
 
-const VALID_COMMANDS: PageName[] = ['about', 'services', 'team', 'contact'];
+const VALID_COMMANDS: PageName[] = ['about', 'services', 'team', 'contact', 'home'];
+
+const MotionBox = motion(Box);
 
 const Chat: React.FC<ChatProps> = ({ onUnlockPage }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
 
-  const chatBg = useColorModeValue('gray.50', 'gray.800');
+  const { colorMode } = useColorMode();
+  const chatBg = useColorModeValue('gray.800', 'gray.900');
+  const inputBg = useColorModeValue('gray.100', 'gray.600');
+  const borderCol = useColorModeValue('gray.700', 'gray.600');
 
   const handleSend = () => {
     const trimmed = inputValue.trim().toLowerCase();
     if (!trimmed) return;
 
-    // 1. Display user message
+    // Add user message
     setMessages((prev) => [...prev, { type: 'user', text: inputValue }]);
 
-    // 2. Check if it matches a valid page
+    // Check if valid command
     if (VALID_COMMANDS.includes(trimmed as PageName)) {
       setMessages((prev) => [
         ...prev,
         {
           type: 'system',
-          text: `Unlocking "${trimmed}" page...`
+          text: `Unlocking or navigating to "${trimmed}" page...`
         }
       ]);
       onUnlockPage(trimmed as PageName);
@@ -48,7 +47,7 @@ const Chat: React.FC<ChatProps> = ({ onUnlockPage }) => {
         ...prev,
         {
           type: 'system',
-          text: 'Unrecognized command. Try: about, services, team, or contact.'
+          text: 'Unrecognized command. Try: home, about, services, team, contact.'
         }
       ]);
     }
@@ -57,27 +56,29 @@ const Chat: React.FC<ChatProps> = ({ onUnlockPage }) => {
   };
 
   return (
-    <Box
+    <MotionBox
       position="fixed"
       bottom="0"
       left="0"
-      w="100%"
-      maxH="35vh"
+      width="100%"
       bg={chatBg}
-      boxShadow="md"
+      color="white"
       borderTop="1px solid"
-      borderColor="gray.200"
+      borderColor={borderCol}
       zIndex={999}
       display="flex"
-      flexDir="column"
+      flexDirection="column"
+      maxH="35vh"
+      initial={{ y: '100%' }}
+      animate={{ y: 0 }}
+      transition={{ type: 'spring', stiffness: 50 }}
     >
-      {/* Chat messages */}
+      {/* Messages area */}
       <Box flex="1" overflowY="auto" p={3}>
         {messages.map((msg, idx) => (
           <Box
             key={idx}
-            bg={msg.type === 'user' ? 'blue.500' : 'gray.400'}
-            color="white"
+            bg={msg.type === 'user' ? 'blue.600' : 'gray.600'}
             p={2}
             my={1}
             maxW="60%"
@@ -89,19 +90,20 @@ const Chat: React.FC<ChatProps> = ({ onUnlockPage }) => {
         ))}
       </Box>
 
-      {/* Input */}
-      <Flex p={2} borderTop="1px solid" borderColor="gray.200">
+      {/* Input area */}
+      <Flex p={2} borderTop="1px solid" borderColor={borderCol}>
         <Input
           placeholder='Type "about", "services", "team", or "contact"'
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          color="black"
+          bg={inputBg}
+          color={colorMode === 'light' ? 'black' : 'white'}
         />
-        <Button ml={2} onClick={handleSend} colorScheme="blue">
+        <Button ml={2} onClick={handleSend} colorScheme="teal">
           Send
         </Button>
       </Flex>
-    </Box>
+    </MotionBox>
   );
 };
 

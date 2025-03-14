@@ -1,28 +1,38 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Flex,
   Heading,
-  Text,
-  Button,
+  Skeleton,
+  Stack,
+  SimpleGrid,
+  Center,
   useColorModeValue
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
+import { FaCog } from 'react-icons/fa';
+import TypedText from './TypedText';
 
 const MotionBox = motion(Box);
-const MotionHeading = motion(Heading);
-const MotionText = motion(Text);
-const MotionButton = motion(Button);
 
 const ServicesPage: React.FC = () => {
+  const [loading, setLoading] = useState(true);
+
+  // Simulate loading for 1.5s
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Same background gradient as HomePage
   const gradientBg = useColorModeValue(
     'linear(to-r, teal.300, blue.400)',
     'linear(to-r, teal.600, blue.800)'
   );
 
   return (
-    <Box position="relative" overflow="hidden" minH="100vh">
-      {/* Background Gradient */}
+    <Box position="relative" minH="100vh" overflow="hidden">
+      {/* Background gradient */}
       <Box
         position="absolute"
         top={0}
@@ -33,67 +43,50 @@ const ServicesPage: React.FC = () => {
         zIndex={-2}
       />
 
-      {/* Decorative Blurred Circle */}
-      <MotionBox
-        position="absolute"
-        top="-100px"
-        right="-100px"
-        w="300px"
-        h="300px"
-        bg="whiteAlpha.400"
-        borderRadius="50%"
-        zIndex={-1}
-        filter="blur(80px)"
-        initial={{ opacity: 0, scale: 0 }}
-        animate={{ opacity: 0.6, scale: 1 }}
-        transition={{ duration: 2 }}
-      />
-
       <Flex
         direction="column"
         justify="center"
         align="center"
+        minH="100vh"
+        px={4}
         textAlign="center"
         color="white"
-        px={4}
-        minH="100vh"
+        position="relative"
+        zIndex={1}
       >
-        <MotionHeading
-          fontSize={{ base: '3xl', md: '5xl' }}
-          mb={4}
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          Our Services
-        </MotionHeading>
-
-        <MotionText
-          fontSize={{ base: 'md', md: 'xl' }}
-          maxW="700px"
-          mx="auto"
-          mb={8}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-        >
-          We deliver high-quality, cost-effective outsourcing for a variety of
-          solutions, including software automations, web scrapers, AI-powered
-          chatbots, and custom machine learning models. Let us handle the
-          technical heavy-lifting, so you can focus on business growth.
-        </MotionText>
-
-        <MotionButton
-          colorScheme="blackAlpha"
-          bg="gray.900"
-          size="lg"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-          _hover={{ bg: 'gray.700' }}
-        >
-          Get a Free Quote
-        </MotionButton>
+        {loading ? (
+          <Stack spacing={4} maxW="600px" mx="auto">
+            <Center>
+              {/* Rotating Cog Icon */}
+              <MotionBox
+                animate={{ rotate: 360 }}
+                transition={{ repeat: Infinity, duration: 2, ease: 'linear' }}
+              >
+                <FaCog size={50} />
+              </MotionBox>
+            </Center>
+            {/* Skeleton placeholders */}
+            <Skeleton height="30px" />
+            <Skeleton height="20px" />
+            <Skeleton height="20px" />
+          </Stack>
+        ) : (
+          <>
+            <Heading fontSize={{ base: '3xl', md: '5xl' }} mb={4}>
+              <TypedText text="Our Services" speed={30} />
+            </Heading>
+            <TypedText text="
+              We specialize in automations, scrapers, AI-driven chatbots, 
+              and more, helping you streamline operations and scale efficiently.
+            " />
+            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} mt={6}>
+              <TypedText text="- Robotic Process Automation" />
+              <TypedText text="- Web Scraping & Data Extraction" />
+              <TypedText text="- AI Chatbot Development" />
+              <TypedText text="- Custom ML Solutions" />
+            </SimpleGrid>
+          </>
+        )}
       </Flex>
     </Box>
   );

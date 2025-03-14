@@ -1,16 +1,17 @@
 import React from 'react';
-import { PageName } from '../App';
 import {
   Box,
   Flex,
   Heading,
-  HStack,
   Button,
-  useColorMode,
+  HStack,
+  IconButton,
   Spacer,
-  IconButton
+  useColorMode,
+  useColorModeValue
 } from '@chakra-ui/react';
 import { MoonIcon, SunIcon } from '@chakra-ui/icons';
+import { PageName } from '../App';
 
 interface NavbarProps {
   unlockedPages: PageName[];
@@ -32,11 +33,12 @@ const Navbar: React.FC<NavbarProps> = ({
   onNavigate
 }) => {
   const { colorMode, toggleColorMode } = useColorMode();
+  const bgNav = useColorModeValue('gray.800', 'gray.900');
 
   return (
     <Box
       as="header"
-      bg="gray.800"
+      bg={bgNav}
       color="white"
       px={4}
       py={3}
@@ -46,33 +48,39 @@ const Navbar: React.FC<NavbarProps> = ({
     >
       <Flex alignItems="center">
         {/* Brand / Logo */}
-        <Heading size="md" cursor="pointer" onClick={() => onNavigate('home')}>
-          My AI Company
+        <Heading
+          size="md"
+          cursor="pointer"
+          onClick={() => onNavigate('home')}
+          mr={8}
+        >
+          My Outsourcing Co.
         </Heading>
 
-        <Spacer />
-
         <HStack spacing={4}>
-          {/* Render a button for each unlocked page */}
           {unlockedPages.map((page) => (
             <Button
               key={page}
               variant={currentPage === page ? 'solid' : 'outline'}
               colorScheme="teal"
+              size="sm"
               onClick={() => onNavigate(page)}
             >
               {PAGE_LABELS[page]}
             </Button>
           ))}
-
-          {/* Light/Dark Mode Toggle */}
-          <IconButton
-            aria-label="Toggle dark mode"
-            icon={colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
-            onClick={toggleColorMode}
-            variant="outline"
-          />
         </HStack>
+
+        <Spacer />
+        {/* Dark/Light Mode Toggle */}
+        <IconButton
+          aria-label="Toggle dark mode"
+          icon={colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
+          onClick={toggleColorMode}
+          variant="outline"
+          size="sm"
+          ml={2}
+        />
       </Flex>
     </Box>
   );
