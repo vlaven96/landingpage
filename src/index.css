@@ -1,0 +1,97 @@
+/* Global Reset & Font */
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background: #f4f4f4;
+  color: #333;
+}
+
+/* App Container */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Landing Page */
+.landing-page-container {
+  background: #fff;
+  padding: 4rem;
+  text-align: center;
+}
+.hero-content h1 {
+  font-size: 2.5rem;
+}
+.cta-button {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+/* Chat Container */
+.chat-container {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  max-height: 40vh;
+  background: #fff;
+  border-top: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.chat-message {
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  border-radius: 6px;
+  max-width: 60%;
+  word-wrap: break-word;
+}
+
+.chat-message.user {
+  background: #e6f7ff;
+  align-self: flex-end;
+}
+
+.chat-message.system {
+  background: #f0f0f0;
+  align-self: flex-start;
+}
+
+.chat-input {
+  display: flex;
+  padding: 0.5rem;
+  border-top: 1px solid #ddd;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.chat-input button {
+  margin-left: 0.5rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+/* Info & Project Components */
+.info-component,
+.project-component {
+  background: #f0f0f0;
+  margin: 0.5rem 0;
+  padding: 1rem;
+  border-radius: 6px;
+  max-width: 60%;
+  align-self: flex-start;
+}
