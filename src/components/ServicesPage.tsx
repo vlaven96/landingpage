@@ -12,23 +12,47 @@ import {
 import { motion } from 'framer-motion';
 import { FaCog } from 'react-icons/fa';
 import TypedText from './TypedText';
+import { Language } from '../App';
 
 const MotionBox = motion(Box);
 
-const ServicesPage: React.FC = () => {
+interface ServicesPageProps {
+  language: Language;
+}
+
+const ServicesPage: React.FC<ServicesPageProps> = ({ language }) => {
   const [loading, setLoading] = useState(true);
 
-  // Simulate loading for 1.5s
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 1500);
     return () => clearTimeout(timer);
   }, []);
 
-  // Same background gradient as HomePage
+  // Use same gradient as Home
   const gradientBg = useColorModeValue(
     'linear(to-r, teal.300, blue.400)',
     'linear(to-r, teal.600, blue.800)'
   );
+
+  // Quick translations
+  const pageTitle = language === 'en' ? 'Our Services' : 'Serviciile Noastre';
+  const pageIntro = language === 'en'
+    ? `We specialize in automations, scrapers, AI-driven chatbots, and more, helping you streamline operations and scale efficiently.`
+    : `Suntem specializați în automatizări, scrapers, chatbot-uri bazate pe AI și multe altele, ajutându-vă să optimizați operațiunile și să creșteți eficiența.`;
+
+  const listItems = language === 'en'
+    ? [
+        '- Robotic Process Automation',
+        '- Web Scraping & Data Extraction',
+        '- AI Chatbot Development',
+        '- Custom ML Solutions'
+      ]
+    : [
+        '- Automatizare Robotică a Proceselor',
+        '- Scraping Web & Extracție de Date',
+        '- Dezvoltare Chatbot AI',
+        '- Soluții ML Personalizate'
+      ];
 
   return (
     <Box position="relative" minH="100vh" overflow="hidden">
@@ -57,7 +81,6 @@ const ServicesPage: React.FC = () => {
         {loading ? (
           <Stack spacing={4} maxW="600px" mx="auto">
             <Center>
-              {/* Rotating Cog Icon */}
               <MotionBox
                 animate={{ rotate: 360 }}
                 transition={{ repeat: Infinity, duration: 2, ease: 'linear' }}
@@ -65,7 +88,6 @@ const ServicesPage: React.FC = () => {
                 <FaCog size={50} />
               </MotionBox>
             </Center>
-            {/* Skeleton placeholders */}
             <Skeleton height="30px" />
             <Skeleton height="20px" />
             <Skeleton height="20px" />
@@ -73,17 +95,13 @@ const ServicesPage: React.FC = () => {
         ) : (
           <>
             <Heading fontSize={{ base: '3xl', md: '5xl' }} mb={4}>
-              <TypedText text="Our Services" speed={30} />
+              <TypedText text={pageTitle} speed={30} />
             </Heading>
-            <TypedText text="
-              We specialize in automations, scrapers, AI-driven chatbots, 
-              and more, helping you streamline operations and scale efficiently.
-            " />
+            <TypedText text={pageIntro} />
             <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} mt={6}>
-              <TypedText text="- Robotic Process Automation" />
-              <TypedText text="- Web Scraping & Data Extraction" />
-              <TypedText text="- AI Chatbot Development" />
-              <TypedText text="- Custom ML Solutions" />
+              {listItems.map((item, index) => (
+                <TypedText key={index} text={item} />
+              ))}
             </SimpleGrid>
           </>
         )}

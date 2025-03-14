@@ -1,25 +1,43 @@
 import React from 'react';
-import { Box, Flex, Heading, Text, Button, useColorModeValue } from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  Heading,
+  Text,
+  Button,
+  useColorModeValue
+} from '@chakra-ui/react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-
-// Replace with your own large GIF or image
+import { Language } from '../App';
 import webAppGif from '../assets/landingpage_animation.gif';
 
 const MotionBox = motion(Box);
 
-const HomePage: React.FC = () => {
+interface HomePageProps {
+  language: Language;
+}
+
+const HomePage: React.FC<HomePageProps> = ({ language }) => {
+  // Example translations
+  const headingText = language === 'en'
+    ? 'Outsourcing Your Tech Needs'
+    : 'Externalizează Nevoile Tale Tehnice';
+
+  const subText = language === 'en'
+    ? 'We are a fresh yet passionate team offering automations, scrapers, AI solutions, chatbots, and more. High-quality work at competitive prices to scale your business faster.'
+    : 'Suntem o echipă tânără dar pasionată, oferind automatizări, scrapers, soluții de AI, chatbot-uri și multe altele. Servicii de înaltă calitate la prețuri competitive pentru a-ți dezvolta afacerea mai rapid.';
+
   const gradientBg = useColorModeValue(
     'linear(to-r, teal.300, blue.400)',
     'linear(to-r, teal.600, blue.800)'
   );
 
-  // Parallax logic
   const { scrollY } = useScroll();
   const gifY = useTransform(scrollY, [0, 800], [0, -300]);
 
   return (
     <Box position="relative" minH="200vh" overflow="hidden">
-      {/* Background gradient (lowest layer) */}
+      {/* Background gradient */}
       <Box
         position="absolute"
         top={0}
@@ -52,7 +70,7 @@ const HomePage: React.FC = () => {
         />
       </MotionBox>
 
-      {/* Hero content (on top) */}
+      {/* Hero content */}
       <Flex
         direction="column"
         justify="center"
@@ -69,12 +87,10 @@ const HomePage: React.FC = () => {
           transition={{ duration: 0.8 }}
         >
           <Heading fontSize={{ base: '3xl', md: '5xl' }} mb={4}>
-            Outsourcing Your Tech Needs
+            {headingText}
           </Heading>
           <Text fontSize={{ base: 'md', md: 'xl' }} maxW="600px" mx="auto">
-            We are a fresh yet passionate team offering automations, scrapers,
-            AI solutions, chatbots, and more. High-quality work at competitive
-            prices to scale your business faster.
+            {subText}
           </Text>
         </motion.div>
 
@@ -85,7 +101,7 @@ const HomePage: React.FC = () => {
           style={{ marginTop: '2rem' }}
         >
           <Button colorScheme="blackAlpha" bg="gray.900" size="lg" _hover={{ bg: 'gray.700' }}>
-            Contact Us
+            {language === 'en' ? 'Contact Us' : 'Contactează-ne'}
           </Button>
         </motion.div>
       </Flex>
@@ -93,10 +109,12 @@ const HomePage: React.FC = () => {
       {/* Placeholder content so you can scroll */}
       <Box p={6} mt="-100px" color="white">
         <Heading size="lg" mb={4}>
-          More About Our Services
+          {language === 'en' ? 'More About Our Services' : 'Mai Multe Despre Serviciile Noastre'}
         </Heading>
         <Text maxW="700px" mb={8}>
-          (Scroll to see the GIF move with parallax. Replace this text with your real content.)
+          {language === 'en'
+            ? '(Scroll to see the GIF move with parallax. Replace this text with your real content.)'
+            : '(Derulează pentru a vedea cum se mișcă GIF-ul în paralax. Înlocuiește acest text cu conținutul real.)'}
         </Text>
       </Box>
     </Box>

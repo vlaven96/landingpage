@@ -11,26 +11,30 @@ import {
   useColorModeValue
 } from '@chakra-ui/react';
 import { MoonIcon, SunIcon } from '@chakra-ui/icons';
-import { PageName } from '../App';
+import { PageName, Language } from '../App';
 
 interface NavbarProps {
   unlockedPages: PageName[];
   currentPage: PageName;
   onNavigate: (page: PageName) => void;
+  language: Language;
+  onToggleLanguage: () => void;
 }
 
-const PAGE_LABELS: Record<PageName, string> = {
-  home: 'Home',
-  about: 'About',
-  services: 'Services',
-  team: 'Team',
-  contact: 'Contact'
+const PAGE_LABELS: Record<PageName, { en: string; ro: string }> = {
+  home: { en: 'Home', ro: 'Acasă' },
+  about: { en: 'About', ro: 'Despre Noi' },
+  services: { en: 'Services', ro: 'Servicii' },
+  team: { en: 'Team', ro: 'Echipă' },
+  contact: { en: 'Contact', ro: 'Contact' }
 };
 
 const Navbar: React.FC<NavbarProps> = ({
   unlockedPages,
   currentPage,
-  onNavigate
+  onNavigate,
+  language,
+  onToggleLanguage
 }) => {
   const { colorMode, toggleColorMode } = useColorMode();
   const bgNav = useColorModeValue('gray.800', 'gray.900');
@@ -54,10 +58,11 @@ const Navbar: React.FC<NavbarProps> = ({
           onClick={() => onNavigate('home')}
           mr={8}
         >
-          My Outsourcing Co.
+          {language === 'en' ? 'My Outsourcing Co.' : 'Compania Outsourcing'}
         </Heading>
 
         <HStack spacing={4}>
+          {/* Only show unlocked pages */}
           {unlockedPages.map((page) => (
             <Button
               key={page}
@@ -66,12 +71,25 @@ const Navbar: React.FC<NavbarProps> = ({
               size="sm"
               onClick={() => onNavigate(page)}
             >
-              {PAGE_LABELS[page]}
+              {/* Translate each page label */}
+              {PAGE_LABELS[page][language]}
             </Button>
           ))}
         </HStack>
 
         <Spacer />
+
+        {/* Language Toggle Button (EN / RO) */}
+        <Button
+          size="sm"
+          colorScheme="orange"
+          variant="outline"
+          onClick={onToggleLanguage}
+          mr={2}
+        >
+          {language === 'en' ? 'RO' : 'EN'}
+        </Button>
+
         {/* Dark/Light Mode Toggle */}
         <IconButton
           aria-label="Toggle dark mode"
@@ -79,7 +97,6 @@ const Navbar: React.FC<NavbarProps> = ({
           onClick={toggleColorMode}
           variant="outline"
           size="sm"
-          ml={2}
         />
       </Flex>
     </Box>

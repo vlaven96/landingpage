@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box } from '@chakra-ui/react';
 import Navbar from './components/Navbar';
 import Chat from './components/Chat';
@@ -9,58 +9,76 @@ import TeamPage from './components/TeamPage';
 import ContactPage from './components/ContactPage';
 
 export type PageName = 'home' | 'about' | 'services' | 'team' | 'contact';
+export type Language = 'en' | 'ro';
 
 const App: React.FC = () => {
   // The pages that are unlocked & visible in the navbar
   const [unlockedPages, setUnlockedPages] = useState<PageName[]>(['home']);
   // Current displayed page
   const [currentPage, setCurrentPage] = useState<PageName>('home');
+  // Current language
+  const [language, setLanguage] = useState<Language>('en');
+
+  // On mount, detect user language
+  useEffect(() => {
+    console.log('navigator.language', navigator.language);
+    const userLang = navigator.language || navigator.languages?.[0] || 'en';
+    // If user language is Romanian, default to 'ro'; else 'en'
+    if (userLang.toLowerCase().startsWith('ro')) {
+      setLanguage('ro');
+    } else {
+      setLanguage('en');
+    }
+  }, []);
 
   // Called by chat when user enters a command
   const unlockPage = (page: PageName) => {
-    // Add the page to unlocked list if not already present
     setUnlockedPages((prev) =>
       prev.includes(page) ? prev : [...prev, page]
     );
-    // Also navigate to it
     setCurrentPage(page);
   };
 
-  // Called by navbar or chat to switch pages (already unlocked)
+  // Navbar or chat can navigate if page is unlocked
   const handleNavigate = (page: PageName) => {
     if (unlockedPages.includes(page)) {
       setCurrentPage(page);
     }
   };
 
+  // Toggle language (optional manual switch)
+  const toggleLanguage = () => {
+    setLanguage((prev) => (prev === 'en' ? 'ro' : 'en'));
+  };
+
+  // Render whichever page is active, passing in "language"
   const renderPage = () => {
     switch (currentPage) {
       case 'home':
-        return <HomePage />;
+        return <HomePage language={language} />;
       case 'about':
-        return <AboutPage />;
+        return <AboutPage language={language} />;
       case 'services':
-        return <ServicesPage />;
+        return <ServicesPage language={language} />;
       case 'team':
-        return <TeamPage />;
+        return <TeamPage language={language} />;
       case 'contact':
-        return <ContactPage />;
+        return <ContactPage language={language} />;
       default:
-        return <HomePage />;
+        return <HomePage language={language} />;
     }
   };
 
   return (
     <Box minH="100vh" position="relative">
-      {/* Navbar shows only unlocked pages */}
       <Navbar
         unlockedPages={unlockedPages}
         currentPage={currentPage}
         onNavigate={handleNavigate}
+        language={language}
+        onToggleLanguage={toggleLanguage}
       />
-      {/* Render whichever page is active */}
       {renderPage()}
-      {/* Chat that can unlock new pages */}
       <Chat onUnlockPage={unlockPage} />
     </Box>
   );

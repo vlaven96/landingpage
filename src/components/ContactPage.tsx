@@ -14,10 +14,15 @@ import {
 import { motion } from 'framer-motion';
 import { FaEnvelope } from 'react-icons/fa';
 import TypedText from './TypedText';
+import { Language } from '../App';
 
 const MotionBox = motion(Box);
 
-const ContactPage: React.FC = () => {
+interface ContactPageProps {
+  language: Language;
+}
+
+const ContactPage: React.FC<ContactPageProps> = ({ language }) => {
   const [loading, setLoading] = useState(true);
 
   // Simulate loading for 1.5s
@@ -31,6 +36,21 @@ const ContactPage: React.FC = () => {
     'linear(to-r, teal.300, blue.400)',
     'linear(to-r, teal.600, blue.800)'
   );
+
+  // Text content based on language
+  const headingText = language === 'en' ? "Contact Us" : "Contactează-ne";
+  
+  const descriptionText = language === 'en'
+    ? "Ready to learn how our outsourcing services can help? Drop us a line below and we'll be in touch!"
+    : "Gata să afli cum serviciile noastre de externalizare te pot ajuta? Lasă-ne un mesaj mai jos și te vom contacta!";
+
+  const placeholders = {
+    name: language === 'en' ? "Your Name" : "Numele tău",
+    email: language === 'en' ? "Your Email" : "Email-ul tău",
+    message: language === 'en' ? "Your Message" : "Mesajul tău"
+  };
+
+  const buttonText = language === 'en' ? "Send Message" : "Trimite Mesaj";
 
   return (
     <Box position="relative" minH="100vh" overflow="hidden">
@@ -75,29 +95,26 @@ const ContactPage: React.FC = () => {
         ) : (
           <>
             <Heading fontSize={{ base: '3xl', md: '5xl' }} mb={4}>
-              <TypedText text="Contact Us" speed={30} />
+              <TypedText text={headingText} speed={30} />
             </Heading>
-            <TypedText text="
-              Ready to learn how our outsourcing services can help? 
-              Drop us a line below and we’ll be in touch!
-            " />
+            <TypedText text={descriptionText} />
             <Stack spacing={3} mt={6} maxW="400px" mx="auto" w="full">
               <Input
-                placeholder="Your Name"
+                placeholder={placeholders.name}
                 bg="whiteAlpha.800"
                 color="black"
               />
               <Input
-                placeholder="Your Email"
+                placeholder={placeholders.email}
                 bg="whiteAlpha.800"
                 color="black"
               />
               <Textarea
-                placeholder="Your Message"
+                placeholder={placeholders.message}
                 bg="whiteAlpha.800"
                 color="black"
               />
-              <Button colorScheme="teal">Send Message</Button>
+              <Button colorScheme="teal">{buttonText}</Button>
             </Stack>
           </>
         )}

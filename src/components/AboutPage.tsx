@@ -11,10 +11,15 @@ import {
 import { motion } from 'framer-motion';
 import { FaRobot } from 'react-icons/fa';
 import TypedText from './TypedText';
+import { Language } from '../App';
 
 const MotionBox = motion(Box);
 
-const AboutPage: React.FC = () => {
+interface AboutPageProps {
+  language: Language;
+}
+
+const AboutPage: React.FC<AboutPageProps> = ({ language }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -27,6 +32,21 @@ const AboutPage: React.FC = () => {
     'linear(to-r, teal.300, blue.400)',
     'linear(to-r, teal.600, blue.800)'
   );
+
+  // Text content based on language
+  const headingText = language === 'en' 
+    ? "About Our Company" 
+    : "Despre Compania Noastră";
+  
+  const aboutText = language === 'en'
+    ? `We're a passionate outsourcing team offering software automation,
+       AI-driven solutions, and scraping. Even though we're at the start
+       of our journey, our dedication to delivering top-notch results is
+       unwavering.`
+    : `Suntem o echipă pasionată de externalizare, oferind automatizare software,
+       soluții bazate pe AI și scraping. Deși suntem la începutul
+       călătoriei noastre, dedicarea noastră pentru livrarea unor rezultate de top
+       este neclintită.`;
 
   return (
     <Box position="relative" minH="100vh" overflow="hidden">
@@ -69,14 +89,9 @@ const AboutPage: React.FC = () => {
         ) : (
           <>
             <Heading fontSize={{ base: '3xl', md: '5xl' }} mb={4}>
-              <TypedText text="About Our Company" speed={30} />
+              <TypedText text={headingText} speed={30} />
             </Heading>
-            <TypedText text="
-              We’re a passionate outsourcing team offering software automation,
-              AI-driven solutions, and scraping. Even though we’re at the start
-              of our journey, our dedication to delivering top-notch results is
-              unwavering.
-            " />
+            <TypedText text={aboutText} />
           </>
         )}
       </Flex>
