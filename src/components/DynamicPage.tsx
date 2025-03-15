@@ -1,57 +1,60 @@
 import React from 'react';
-import {
-  Box,
-  Flex,
-  Heading,
-  Text,
-  useColorModeValue
-} from '@chakra-ui/react';
+import { Box, Container, Heading, Text, Divider, Skeleton, useColorModeValue } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { DynamicPageData } from '../App';
-import TypedText from './TypedText';
+
+interface DynamicPageProps {
+  data?: DynamicPageData;
+}
 
 const MotionBox = motion(Box);
 
-interface DynamicPageProps {
-  page: DynamicPageData;
-}
-
-const DynamicPage: React.FC<DynamicPageProps> = ({ page }) => {
-  const gradientBg = useColorModeValue(
-    'linear(to-r, teal.300, blue.400)',
-    'linear(to-r, teal.600, blue.800)'
-  );
+const DynamicPage: React.FC<DynamicPageProps> = ({ data }) => {
+  if (!data) {
+    return (
+      <Box minH="100vh" bg="white">
+        <Container maxW="container.md" pt={{ base: 20, md: 32 }} pb={{ base: 16, md: 24 }}>
+          <Skeleton height="60px" mb={6} />
+          <Divider my={6} borderColor="gray.200" />
+          <Skeleton height="20px" mb={3} />
+          <Skeleton height="20px" mb={3} />
+          <Skeleton height="20px" mb={3} />
+          <Skeleton height="20px" mb={3} />
+          <Skeleton height="20px" width="70%" />
+        </Container>
+      </Box>
+    );
+  }
 
   return (
-    <Box position="relative" minH="100vh" overflow="hidden">
-      {/* Same gradient background style */}
-      <Box
-        position="absolute"
-        top={0}
-        left={0}
-        w="100%"
-        h="100%"
-        bgGradient={gradientBg}
-        zIndex={-2}
-      />
-      <Flex
-        direction="column"
-        justify="center"
-        align="center"
-        minH="100vh"
-        px={4}
-        textAlign="center"
-        color="white"
-        position="relative"
-        zIndex={1}
-      >
-        <Heading fontSize={{ base: '3xl', md: '5xl' }} mb={4}>
-          <TypedText text={page.title} speed={30} />
-        </Heading>
-        <Text maxW="600px" mx="auto">
-          <TypedText text={page.content} speed={20} />
-        </Text>
-      </Flex>
+    <Box minH="100vh" bg="white">
+      <Container maxW="container.md" pt={{ base: 20, md: 32 }} pb={{ base: 16, md: 24 }}>
+        <MotionBox
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Heading 
+            as="h1" 
+            size="2xl" 
+            mb={6} 
+            color="gray.800"
+          >
+            {data.title}
+          </Heading>
+          
+          <Divider my={6} borderColor="gray.200" />
+          
+          <Box 
+            whiteSpace="pre-wrap" 
+            fontSize="lg" 
+            color="gray.700" 
+            lineHeight="1.8"
+          >
+            {data.content}
+          </Box>
+        </MotionBox>
+      </Container>
     </Box>
   );
 };

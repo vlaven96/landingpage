@@ -1,121 +1,173 @@
 import React from 'react';
 import {
   Box,
+  Container,
   Flex,
   Heading,
   Text,
   Button,
-  useColorModeValue
+  Stack,
+  useColorModeValue,
+  Image
 } from '@chakra-ui/react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Language } from '../App';
 import webAppGif from '../assets/landingpage_animation.gif';
 
 const MotionBox = motion(Box);
+const MotionText = motion(Text);
 
 interface HomePageProps {
   language: Language;
 }
 
 const HomePage: React.FC<HomePageProps> = ({ language }) => {
-  // Example translations
+  // Content
   const headingText = language === 'en'
     ? 'Outsourcing Your Tech Needs'
     : 'Externalizează Nevoile Tale Tehnice';
 
   const subText = language === 'en'
-    ? 'We are a fresh yet passionate team offering automations, scrapers, AI solutions, chatbots, and more. High-quality work at competitive prices to scale your business faster.'
-    : 'Suntem o echipă tânără dar pasionată, oferind automatizări, scrapers, soluții de AI, chatbot-uri și multe altele. Servicii de înaltă calitate la prețuri competitive pentru a-ți dezvolta afacerea mai rapid.';
+    ? 'We deliver cutting-edge automation, AI solutions, and scalable software to help your business grow faster.'
+    : 'Oferim automatizări avansate, soluții AI și software scalabil pentru a ajuta afacerea ta să crească mai rapid.';
 
-  const gradientBg = useColorModeValue(
-    'linear(to-r, teal.300, blue.400)',
-    'linear(to-r, teal.600, blue.800)'
-  );
-
-  const { scrollY } = useScroll();
-  const gifY = useTransform(scrollY, [0, 800], [0, -300]);
-
+  // Color mode values
+  const bg = useColorModeValue('white', 'darkBg.900');
+  const cardBg = useColorModeValue('white', 'darkBg.800');
+  const textColor = useColorModeValue('gray.800', 'gray.100');
+  const subtextColor = useColorModeValue('gray.600', 'gray.300');
+  
   return (
-    <Box position="relative" minH="200vh" overflow="hidden">
-      {/* Background gradient */}
-      <Box
-        position="absolute"
-        top={0}
-        left={0}
-        w="100%"
-        h="100%"
-        bgGradient={gradientBg}
-        zIndex={-3}
-      />
-
-      {/* Parallax GIF */}
-      <MotionBox
-        style={{ y: gifY }}
-        position="absolute"
-        top={0}
-        left={0}
-        width="100%"
-        height="100vh"
-        zIndex={-2}
-        overflow="hidden"
-      >
-        <motion.img
-          src={webAppGif}
-          style={{
-            width: '100%',
-            height: 'auto',
-            objectFit: 'cover'
-          }}
-          alt="Animated Web App"
-        />
-      </MotionBox>
-
-      {/* Hero content */}
-      <Flex
-        direction="column"
-        justify="center"
-        align="center"
-        textAlign="center"
-        color="white"
-        minH="100vh"
-        px={4}
-        zIndex={1}
-      >
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+    <Box minH="100vh" bg={bg} overflowX="hidden">
+      {/* Hero Section */}
+      <Container maxW="container.xl" pt={{ base: 20, md: 32 }} pb={{ base: 16, md: 24 }}>
+        <Flex 
+          direction={{ base: 'column', lg: 'row' }} 
+          align="center" 
+          justify="space-between"
+          gap={{ base: 12, lg: 6 }}
         >
-          <Heading fontSize={{ base: '3xl', md: '5xl' }} mb={4}>
-            {headingText}
+          {/* Left Content */}
+          <Box maxW={{ base: '100%', lg: '40%' }} textAlign={{ base: 'center', lg: 'left' }}>
+            <MotionBox
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7 }}
+            >
+              <Heading 
+                as="h1" 
+                size="2xl" 
+                lineHeight="1.2"
+                fontWeight="bold"
+                mb={6}
+                color={textColor}
+              >
+                {headingText}
+              </Heading>
+              
+              <MotionText
+                fontSize="xl"
+                color={subtextColor}
+                mb={8}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3, duration: 0.7 }}
+              >
+                {subText}
+              </MotionText>
+              
+              <MotionBox
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.7 }}
+              >
+                <Button 
+                  size="lg" 
+                  colorScheme="brand"
+                  mb={{ base: 10, lg: 0 }}
+                >
+                  {language === 'en' ? 'Get Started' : 'Începe Acum'}
+                </Button>
+              </MotionBox>
+            </MotionBox>
+          </Box>
+          
+          {/* Right Content - Animation */}
+          <MotionBox
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2, duration: 0.7 }}
+            maxW={{ base: '100%', lg: '55%' }}
+          >
+            <Image 
+              src={webAppGif} 
+              alt="Tech Animation" 
+              borderRadius="xl"
+              shadow="xl"
+            />
+          </MotionBox>
+        </Flex>
+      </Container>
+      
+      {/* Features Section */}
+      <Box bg={useColorModeValue('gray.50', 'darkBg.800')} py={20}>
+        <Container maxW="container.xl">
+          <Heading 
+            as="h2" 
+            size="xl" 
+            textAlign="center" 
+            mb={16}
+            color={textColor}
+          >
+            {language === 'en' ? 'Our Services' : 'Serviciile Noastre'}
           </Heading>
-          <Text fontSize={{ base: 'md', md: 'xl' }} maxW="600px" mx="auto">
-            {subText}
-          </Text>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-          style={{ marginTop: '2rem' }}
-        >
-          <Button colorScheme="blackAlpha" bg="gray.900" size="lg" _hover={{ bg: 'gray.700' }}>
-            {language === 'en' ? 'Contact Us' : 'Contactează-ne'}
-          </Button>
-        </motion.div>
-      </Flex>
-
-      {/* Placeholder content so you can scroll */}
-      <Box p={6} mt="-100px" color="white">
-        <Heading size="lg" mb={4}>
-          {language === 'en' ? 'More About Our Services' : 'Mai Multe Despre Serviciile Noastre'}
-        </Heading>
-        <Text maxW="700px" mb={8}>
-          {language === 'en'
-            ? '(Scroll to see the GIF move with parallax. Replace this text with your real content.)'
-            : '(Derulează pentru a vedea cum se mișcă GIF-ul în paralax. Înlocuiește acest text cu conținutul real.)'}
-        </Text>
+          
+          <Stack 
+            direction={{ base: 'column', md: 'row' }}
+            spacing={8}
+            justify="center"
+          >
+            {[
+              {
+                title: language === 'en' ? 'AI Automation' : 'Automatizare AI',
+                description: language === 'en' 
+                  ? 'Smart solutions that learn and adapt to your business needs'
+                  : 'Soluții inteligente care învață și se adaptează nevoilor afacerii tale'
+              },
+              {
+                title: language === 'en' ? 'Web Scraping' : 'Web Scraping',
+                description: language === 'en'
+                  ? 'Extract valuable data to drive your business decisions'
+                  : 'Extrage date valoroase pentru a-ți ghida deciziile de afaceri'
+              },
+              {
+                title: language === 'en' ? 'Custom Development' : 'Dezvoltare Personalizată',
+                description: language === 'en'
+                  ? 'Bespoke software solutions tailored to your unique requirements'
+                  : 'Soluții software personalizate adaptate cerințelor tale unice'
+              }
+            ].map((feature, idx) => (
+              <MotionBox
+                key={idx}
+                bg={cardBg}
+                p={8}
+                borderRadius="lg"
+                boxShadow="sm"
+                flex="1"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 * idx, duration: 0.5 }}
+              >
+                <Heading as="h3" size="md" mb={4} color={textColor}>
+                  {feature.title}
+                </Heading>
+                <Text color={subtextColor}>
+                  {feature.description}
+                </Text>
+              </MotionBox>
+            ))}
+          </Stack>
+        </Container>
       </Box>
     </Box>
   );

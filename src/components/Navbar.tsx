@@ -2,142 +2,204 @@ import React from 'react';
 import {
   Box,
   Flex,
-  Heading,
   Button,
+  Image,
   HStack,
+  Text,
   IconButton,
-  Spacer,
+  useDisclosure,
   useColorMode,
-  useColorModeValue
+  useColorModeValue,
+  Container,
+  Collapse,
+  VStack,
+  Divider
 } from '@chakra-ui/react';
-import { MoonIcon, SunIcon } from '@chakra-ui/icons';
-import { DynamicPageData, PageIdentifier, Language } from '../App';
+import { HamburgerIcon, CloseIcon, MoonIcon, SunIcon } from '@chakra-ui/icons';
+import { motion } from 'framer-motion';
+import { PageName, PageIdentifier } from '../App';
 
-/**
- * For "default" pages, we have both EN and RO labels.
- * If a page is dynamic, we store its `title` in dynamicPages (no additional translation).
- */
-const DEFAULT_PAGE_LABELS: Record<string, { en: string; ro: string }> = {
-  home: { en: 'Home', ro: 'Acasă' },
-  about: { en: 'About', ro: 'Despre Noi' },
-  services: { en: 'Services', ro: 'Servicii' },
-  team: { en: 'Team', ro: 'Echipă' },
-  contact: { en: 'Contact', ro: 'Contact' }
-};
+const MotionBox = motion(Box);
 
-interface NavbarProps {
-  /** A list of page IDs that are currently unlocked (could be default or dynamic). */
-  unlockedPages: PageIdentifier[];
-  /** The user’s current page. */
+interface NavBarProps {
   currentPage: PageIdentifier;
-  /** Called when the user clicks a nav button. */
-  onNavigate: (pageId: PageIdentifier) => void;
-  /** The list of dynamic pages that have been created by the chatbot. */
-  dynamicPages: DynamicPageData[];
-  /** Current language (en/ro). */
-  language: Language;
-  /** Function to toggle language. */
+  unlockedPages: PageIdentifier[]; // Array of pages that have been unlocked
+  onNavigate: (page: PageIdentifier) => void;
   onToggleLanguage: () => void;
+  language: 'en' | 'ro';
 }
 
-const Navbar: React.FC<NavbarProps> = ({
+const NavBar: React.FC<NavBarProps> = ({ 
+  currentPage, 
   unlockedPages,
-  currentPage,
-  onNavigate,
-  dynamicPages,
-  language,
-  onToggleLanguage
+  onNavigate, 
+  onToggleLanguage,
+  language 
 }) => {
+  const { isOpen, onToggle } = useDisclosure();
   const { colorMode, toggleColorMode } = useColorMode();
-  const bgNav = useColorModeValue('gray.800', 'gray.900');
+  
+  const bg = useColorModeValue('white', 'gray.800');
+  const borderColor = useColorModeValue('gray.200', 'gray.700');
+  const textColor = useColorModeValue('gray.800', 'white');
+  
+  // Navigation items with translations
+  const navItems = [
+    { name: 'home', label: language === 'en' ? 'Home' : 'Acasă' },
+    { name: 'about', label: language === 'en' ? 'About' : 'Despre' },
+    { name: 'services', label: language === 'en' ? 'Services' : 'Servicii' },
+    { name: 'team', label: language === 'en' ? 'Team' : 'Echipa' },
+    { name: 'contact', label: language === 'en' ? 'Contact' : 'Contact' },
+  ];
+
+  // Filter items to only show unlocked pages
+  const availableNavItems = navItems.filter(item => 
+    unlockedPages.includes(item.name as PageIdentifier)
+  );
 
   return (
-    <Box
-      as="header"
-      bg={bgNav}
-      color="white"
-      px={4}
-      py={3}
-      position="sticky"
-      top="0"
-      zIndex="1000"
+    <Box 
+      as="nav" 
+      position="fixed" 
+      top={0} 
+      left={0} 
+      right={0} 
+      zIndex={1000}
+      bg={bg}
+      borderBottom="1px solid"
+      borderColor={borderColor}
+      shadow="sm"
     >
-      <Flex alignItems="center">
-        {/** Brand / Logo, toggles to 'home' */}
-        <Heading
-          size="md"
-          cursor="pointer"
-          onClick={() => onNavigate('home')}
-          mr={8}
-        >
-          {language === 'en' ? 'My Outsourcing Co.' : 'Compania Outsourcing'}
-        </Heading>
+      <Container maxW="container.xl">
+        <Flex align="center" justify="space-between" h="70px">
+          {/* Logo */}
+          <MotionBox 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            cursor="pointer"
+            onClick={() => onNavigate('home')}
+          >
+            <Flex align="center">
+              <Text 
+                fontSize="xl" 
+                fontWeight="bold" 
+                color="brand.500"
+              >
+                TechSolutions
+              </Text>
+            </Flex>
+          </MotionBox>
 
-        <HStack spacing={4}>
-          {/** Render nav buttons for each unlocked page (default or dynamic) */}
-          {unlockedPages.map((pageId) => {
-            // If it's one of our default pages, show the translated label
-            if (DEFAULT_PAGE_LABELS[pageId]) {
-              const labelObj = DEFAULT_PAGE_LABELS[pageId];
-              const label = labelObj[language]; // 'Home' or 'Acasă' etc.
-              return (
+          {/* Desktop Nav - only showing unlocked pages */}
+          <HStack spacing={8} display={{ base: 'none', md: 'flex' }}>
+            {availableNavItems.map((item, idx) => (
+              <Box 
+                key={item.name}
+                as={MotionBox}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.1, duration: 0.5 }}
+              >
                 <Button
-                  key={pageId}
-                  variant={currentPage === pageId ? 'solid' : 'outline'}
-                  colorScheme="teal"
-                  size="sm"
-                  onClick={() => onNavigate(pageId)}
+                  variant="ghost"
+                  color={currentPage === item.name ? 'brand.500' : textColor}
+                  fontWeight={currentPage === item.name ? 'semibold' : 'normal'}
+                  borderBottom={currentPage === item.name ? '2px solid' : 'none'}
+                  borderColor="brand.500"
+                  borderRadius="0"
+                  onClick={() => onNavigate(item.name as PageIdentifier)}
+                  _hover={{
+                    color: 'brand.500',
+                    bg: 'transparent'
+                  }}
                 >
-                  {label}
+                  {item.label}
                 </Button>
-              );
-            }
+              </Box>
+            ))}
+          </HStack>
 
-            // Otherwise, see if it's a dynamic page
-            const dp = dynamicPages.find((d) => d.id === pageId);
-            if (dp) {
-              return (
-                <Button
-                  key={dp.id}
-                  variant={currentPage === dp.id ? 'solid' : 'outline'}
-                  colorScheme="teal"
-                  size="sm"
-                  onClick={() => onNavigate(dp.id)}
-                >
-                  {dp.title}
-                </Button>
-              );
-            }
+          {/* Right side controls */}
+          <HStack spacing={4}>
+            <MotionBox
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5, duration: 0.5 }}
+            >
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={onToggleLanguage}
+                borderColor="brand.500"
+                color={textColor}
+                _hover={{ bg: 'brand.50' }}
+              >
+                {language === 'en' ? 'RO' : 'EN'}
+              </Button>
+            </MotionBox>
+            
+            <MotionBox
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6, duration: 0.5 }}
+            >
+              <IconButton
+                aria-label="Toggle color mode"
+                icon={colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
+                onClick={toggleColorMode}
+                variant="ghost"
+                color={textColor}
+              />
+            </MotionBox>
+            
+            {/* Mobile menu button */}
+            <Box display={{ base: 'block', md: 'none' }}>
+              <IconButton
+                aria-label="Open menu"
+                icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
+                onClick={onToggle}
+                variant="ghost"
+                color={textColor}
+              />
+            </Box>
+          </HStack>
+        </Flex>
 
-            // If something else or not found, ignore
-            return null;
-          })}
-        </HStack>
-
-        <Spacer />
-
-        {/** Language Toggle Button (EN / RO) */}
-        <Button
-          size="sm"
-          colorScheme="orange"
-          variant="outline"
-          onClick={onToggleLanguage}
-          mr={2}
-        >
-          {language === 'en' ? 'RO' : 'EN'}
-        </Button>
-
-        {/** Dark/Light Mode Toggle */}
-        <IconButton
-          aria-label="Toggle dark mode"
-          icon={colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
-          onClick={toggleColorMode}
-          variant="outline"
-          size="sm"
-        />
-      </Flex>
+        {/* Mobile Nav - only showing unlocked pages */}
+        <Collapse in={isOpen} animateOpacity>
+          <VStack
+            py={4}
+            spacing={4}
+            align="stretch"
+            display={{ md: 'none' }}
+            borderTop="1px solid"
+            borderColor={borderColor}
+          >
+            {availableNavItems.map((item) => (
+              <Button
+                key={item.name}
+                variant="ghost"
+                justifyContent="flex-start"
+                onClick={() => {
+                  onNavigate(item.name as PageIdentifier);
+                  onToggle();
+                }}
+                color={currentPage === item.name ? 'brand.500' : textColor}
+                fontWeight={currentPage === item.name ? 'semibold' : 'normal'}
+                _hover={{
+                  color: 'brand.500'
+                }}
+              >
+                {item.label}
+              </Button>
+            ))}
+            <Divider />
+          </VStack>
+        </Collapse>
+      </Container>
     </Box>
   );
 };
 
-export default Navbar;
+export default NavBar;

@@ -1,18 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Box,
   Flex,
-  Button,
   Input,
   Text,
+  IconButton,
   useColorModeValue,
-  useColorMode
+  Container,
+  VStack,
+  Icon,
+  Avatar,
+  HStack,
+  InputGroup,
+  InputRightElement
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { PageName, PageIdentifier, DynamicPageData } from '../App';
+import { FaRobot, FaPaperPlane, FaUser } from 'react-icons/fa';
 
 interface ChatProps {
-  // Instead of only “unlock page,” we might also create a new dynamic page
   onUnlockOrCreatePage: (pageId: PageIdentifier, pageData?: DynamicPageData) => void;
 }
 
@@ -25,20 +31,34 @@ type Message = {
 const KNOWN_PAGES: PageName[] = ['home', 'about', 'services', 'team', 'contact'];
 
 const MotionBox = motion(Box);
+const MotionFlex = motion(Flex);
 
 const Chat: React.FC<ChatProps> = ({ onUnlockOrCreatePage }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  // Colors
+  const bgColor = useColorModeValue('gray.50', 'darkBg.900');
+  const userMsgBg = useColorModeValue('blue.50', 'blue.900');
+  const botMsgBg = useColorModeValue('white', 'darkBg.800');
+  const borderColor = useColorModeValue('gray.200', 'gray.700');
+  const inputBg = useColorModeValue('white', 'darkBg.800');
+  const textColor = useColorModeValue('gray.800', 'gray.100');
+  const subtextColor = useColorModeValue('gray.600', 'gray.400');
+  
+  // Scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+  
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
 
-  const { colorMode } = useColorMode();
-  const chatBg = useColorModeValue('gray.800', 'gray.900');
-  const inputBg = useColorModeValue('gray.100', 'gray.600');
-  const borderCol = useColorModeValue('gray.700', 'gray.600');
-
-  /**
-   * A mock “chatbot” that checks if the user’s text
-   * matches known pages. Otherwise, we create a new page.
-   */
   const handleSend = () => {
     const userMsg = inputValue.trim();
     if (!userMsg) return;
@@ -58,17 +78,12 @@ const Chat: React.FC<ChatProps> = ({ onUnlockOrCreatePage }) => {
       return;
     }
 
-    // 2) Otherwise, we “dynamically create” a new page
-    //    We'll do a minimal approach: the chatbot calls this "Custom Page"
-    //    The "content" is just the user's text repeated or a “Chatbot answer”.
-    const dynamicPageId = `custom-page-${Date.now()}`; // unique ID
+    // 2) Otherwise, create a dynamic page
+    const dynamicPageId = `custom-page-${Date.now()}`;
     const systemText = `Creating a new custom page for your request...`;
 
     setMessages((prev) => [...prev, { type: 'system', text: systemText }]);
 
-    // Suppose we want the page’s title = “Your Custom Topic”
-    // and the content = “User said: [userMsg]”
-    // or some “AI” text. We'll keep it simple here:
     const newPageData: DynamicPageData = {
       id: dynamicPageId,
       title: 'Custom Topic',
@@ -80,54 +95,124 @@ const Chat: React.FC<ChatProps> = ({ onUnlockOrCreatePage }) => {
   };
 
   return (
-    <MotionBox
-      position="fixed"
-      bottom="0"
-      left="0"
-      width="100%"
-      bg={chatBg}
-      color="white"
-      borderTop="1px solid"
-      borderColor={borderCol}
-      zIndex={999}
+    <Box 
+      w="100%" 
+      minH="100vh"
+      bg={bgColor}
       display="flex"
       flexDirection="column"
-      maxH="35vh"
-      initial={{ y: '100%' }}
-      animate={{ y: 0 }}
-      transition={{ type: 'spring', stiffness: 50 }}
     >
-      {/* Messages area */}
-      <Box flex="1" overflowY="auto" p={3}>
+      {/* Header area - welcome message & instructions */}
+      {messages.length === 0 && (
+        <MotionBox
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          pt={{ base: 20, md: 32 }}
+          pb={8}
+          textAlign="center"
+        >
+          <Container maxW="container.md">
+            <Icon as={FaRobot} fontSize="5xl" color="brand.500" mb={6} />
+            <Text fontSize="2xl" fontWeight="bold" mb={4} color={textColor}>
+              Welcome to TechSolutions AI Assistant
+            </Text>
+            <Text fontSize="lg" color={subtextColor} mb={8}>
+              Ask me to navigate to different pages or create custom content for you.
+              Try asking about "Home", "About", "Services", "Team", or "Contact".
+            </Text>
+          </Container>
+        </MotionBox>
+      )}
+      
+      {/* Chat messages area */}
+      <VStack 
+        spacing={0}
+        w="100%"
+        flex="1"
+        overflowY="auto"
+        pt={messages.length > 0 ? 24 : 0}
+        px={0}
+      >
         {messages.map((msg, idx) => (
-          <Box
+          <Box 
             key={idx}
-            bg={msg.type === 'user' ? 'blue.600' : 'gray.600'}
-            p={2}
-            my={1}
-            maxW="60%"
-            borderRadius="md"
-            alignSelf={msg.type === 'user' ? 'flex-end' : 'flex-start'}
+            w="100%"
+            py={4}
+            bg={msg.type === 'user' ? userMsgBg : botMsgBg}
+            borderBottom="1px solid"
+            borderColor={borderColor}
           >
-            <Text fontSize="sm">{msg.text}</Text>
+            <Container maxW="container.lg">
+              <Flex align="flex-start">
+                <Box mr={4} mt={1}>
+                  {msg.type === 'user' ? (
+                    <Avatar size="sm" bg="brand.600" icon={<FaUser fontSize="0.8rem" />} />
+                  ) : (
+                    <Avatar size="sm" bg="brand.500" icon={<FaRobot fontSize="0.8rem" />} />
+                  )}
+                </Box>
+                <Box flex="1">
+                  <Text fontWeight="bold" fontSize="sm" mb={1} color={textColor}>
+                    {msg.type === 'user' ? 'You' : 'AI Assistant'}
+                  </Text>
+                  <Text color={msg.type === 'user' ? 'white' : textColor}>
+                    {msg.text}
+                  </Text>
+                </Box>
+              </Flex>
+            </Container>
           </Box>
         ))}
+        <div ref={messagesEndRef} />
+      </VStack>
+      
+      {/* Input area - fixed at bottom */}
+      <Box 
+        position="fixed"
+        bottom={0}
+        left={0}
+        right={0}
+        borderTop="1px solid"
+        borderColor={borderColor}
+        bg={bgColor}
+        px={4}
+        py={6}
+        zIndex={10}
+      >
+        <Container maxW="container.md">
+          <InputGroup size="lg">
+            <Input
+              placeholder="Type your message here..."
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyPress={handleKeyPress}
+              borderWidth="1px"
+              borderColor={borderColor}
+              bg={inputBg}
+              color={textColor}
+              _hover={{ borderColor: 'brand.400' }}
+              _focus={{ borderColor: 'brand.500', boxShadow: 'outline' }}
+              pr="4.5rem"
+              borderRadius="lg"
+              height="56px"
+            />
+            <InputRightElement width="4.5rem" h="full">
+              <IconButton
+                h="1.75rem"
+                size="lg"
+                aria-label="Send message"
+                icon={<FaPaperPlane />}
+                colorScheme="brand"
+                onClick={handleSend}
+                isDisabled={!inputValue.trim()}
+                borderRadius="md"
+                mt={1}
+              />
+            </InputRightElement>
+          </InputGroup>
+        </Container>
       </Box>
-
-      {/* Input area */}
-      <Flex p={2} borderTop="1px solid" borderColor={borderCol}>
-        <Input
-          placeholder='Ask me anything: "services", "team", or new topic...'
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          bg={inputBg}
-          color={colorMode === 'light' ? 'black' : 'white'}
-        />
-        <Button ml={2} onClick={handleSend} colorScheme="teal">
-          Send
-        </Button>
-      </Flex>
-    </MotionBox>
+    </Box>
   );
 };
 

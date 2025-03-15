@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box,
-  Flex,
+  Container,
   Heading,
   Text,
   SimpleGrid,
   Avatar,
-  VStack,
+  Flex,
   Skeleton,
   SkeletonCircle,
-  Center,
   useColorModeValue
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
@@ -18,6 +17,7 @@ import TypedText from './TypedText';
 import { Language } from '../App';
 
 const MotionBox = motion(Box);
+const MotionFlex = motion(Flex);
 
 interface TeamPageProps {
   language: Language;
@@ -58,102 +58,98 @@ const TeamPage: React.FC<TeamPageProps> = ({ language }) => {
     },
     {
       name: "David Chen",
-      role: language === 'en' ? "Full-Stack Developer" : "Developer Full-Stack",
+      role: language === 'en' ? "Data Engineer" : "Inginer de Date",
       bio: language === 'en'
-        ? "Builds robust applications with modern technologies."
-        : "Construiește aplicații robuste cu tehnologii moderne.",
-      avatar: "https://randomuser.me/api/portraits/men/22.jpg"
+        ? "Transforms raw data into valuable business insights."
+        : "Transformă date brute în informații valoroase pentru afaceri.",
+      avatar: "https://randomuser.me/api/portraits/men/79.jpg"
     }
   ];
 
-  // Same background gradient as other pages
-  const gradientBg = useColorModeValue(
-    'linear(to-r, teal.300, blue.400)',
-    'linear(to-r, teal.600, blue.800)'
-  );
+  // Color mode values
+  const bg = useColorModeValue('white', 'darkBg.900');
+  const cardBg = useColorModeValue('white', 'darkBg.800');
+  const textColor = useColorModeValue('gray.800', 'gray.100');
+  const subtextColor = useColorModeValue('gray.600', 'gray.300');
+  const roleColor = useColorModeValue('brand.500', 'brand.300');
 
   return (
-    <Box position="relative" minH="100vh" overflow="hidden">
-      {/* Background gradient */}
-      <Box
-        position="absolute"
-        top={0}
-        left={0}
-        w="100%"
-        h="100%"
-        bgGradient={gradientBg}
-        zIndex={-2}
-      />
-
-      <Flex
-        direction="column"
-        align="center"
-        minH="100vh"
-        px={6}
-        py={12}
-        color="white"
-        position="relative"
-        zIndex={1}
-      >
+    <Box minH="100vh" bg={bg}>
+      <Container maxW="container.lg" pt={{ base: 20, md: 32 }} pb={{ base: 16, md: 24 }}>
         {loading ? (
-          <Box textAlign="center" maxW="800px" mx="auto">
-            <Center mb={8}>
-              <MotionBox
-                animate={{ rotate: 360 }}
-                transition={{ repeat: Infinity, duration: 2, ease: 'linear' }}
-              >
-                <FaUsers size={50} />
-              </MotionBox>
-            </Center>
-            <Skeleton height="40px" mb={6} />
-            <Skeleton height="20px" mb={10} />
-            
-            <SimpleGrid columns={{ base: 1, md: 3 }} spacing={8}>
-              {[1, 2, 3].map((_, i) => (
-                <VStack key={i} spacing={3} p={4}>
-                  <SkeletonCircle size="80px" />
-                  <Skeleton height="20px" width="120px" />
-                  <Skeleton height="15px" width="100px" />
-                  <Skeleton height="40px" />
-                </VStack>
-              ))}
-            </SimpleGrid>
-          </Box>
+          <Flex direction="column" align="center" gap={8}>
+            <MotionBox
+              animate={{ rotate: 360 }}
+              transition={{ repeat: Infinity, duration: 2, ease: 'linear' }}
+              color="brand.500"
+              fontSize="4xl"
+            >
+              <FaUsers size={50} />
+            </MotionBox>
+            <Skeleton height="40px" width="200px" />
+            <SkeletonCircle size="100px" />
+            <Skeleton height="20px" width="150px" />
+            <Skeleton height="20px" width="200px" />
+          </Flex>
         ) : (
-          <Box textAlign="center" maxW="800px" mx="auto">
-            <Heading as="h1" fontSize={{ base: '3xl', md: '5xl' }} mb={4}>
+          <Flex direction="column" align="center" gap={16}>
+            <Heading 
+              as="h1" 
+              size="2xl" 
+              textAlign="center"
+              color={textColor}
+            >
               <TypedText text={headingText} speed={30} />
             </Heading>
-            <Text fontSize="xl" mb={10}>
+            
+            <Text 
+              fontSize="xl" 
+              mb={16} 
+              maxW="xl" 
+              textAlign="center"
+              color={subtextColor}
+            >
               <TypedText text={introText} />
             </Text>
             
-            <SimpleGrid columns={{ base: 1, md: 3 }} spacing={8}>
+            <SimpleGrid columns={{ base: 1, md: 3 }} spacing={10} w="100%">
               {teamMembers.map((member, idx) => (
-                <MotionBox
+                <MotionFlex
                   key={idx}
+                  direction="column"
+                  align="center"
+                  p={6}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.2 }}
-                  bg="whiteAlpha.200"
-                  p={6}
+                  bg={cardBg}
                   borderRadius="lg"
-                  backdropFilter="blur(10px)"
+                  boxShadow="sm"
+                  textAlign="center"
                 >
-                  <VStack>
-                    <Avatar size="xl" src={member.avatar} mb={4} />
-                    <Heading size="md">{member.name}</Heading>
-                    <Text color="teal.200" fontWeight="bold">
-                      {member.role}
-                    </Text>
-                    <Text>{member.bio}</Text>
-                  </VStack>
-                </MotionBox>
+                  <Avatar 
+                    size="xl" 
+                    src={member.avatar} 
+                    mb={4} 
+                    border="4px solid"
+                    borderColor={cardBg}
+                    boxShadow="md"
+                  />
+                  <Heading size="md" color={textColor} mb={1}>
+                    {member.name}
+                  </Heading>
+                  <Text color={roleColor} fontWeight="500" mb={4}>
+                    {member.role}
+                  </Text>
+                  <Text color={subtextColor}>
+                    {member.bio}
+                  </Text>
+                </MotionFlex>
               ))}
             </SimpleGrid>
-          </Box>
+          </Flex>
         )}
-      </Flex>
+      </Container>
     </Box>
   );
 };

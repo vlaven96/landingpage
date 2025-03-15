@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box,
+  Container,
   Flex,
   Heading,
+  Text,
   Skeleton,
   Stack,
-  Center,
+  Icon,
+  SimpleGrid,
   useColorModeValue
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
-import { FaRobot } from 'react-icons/fa';
+import { FaRobot, FaLightbulb, FaUsers, FaCode } from 'react-icons/fa';
 import TypedText from './TypedText';
 import { Language } from '../App';
 
@@ -27,74 +30,119 @@ const AboutPage: React.FC<AboutPageProps> = ({ language }) => {
     return () => clearTimeout(timer);
   }, []);
 
-  // We reuse the same background gradient as home, for visual consistency
-  const gradientBg = useColorModeValue(
-    'linear(to-r, teal.300, blue.400)',
-    'linear(to-r, teal.600, blue.800)'
-  );
-
   // Text content based on language
-  const headingText = language === 'en' 
-    ? "About Our Company" 
-    : "Despre Compania Noastră";
+  const headingText = language === 'en' ? "About Our Company" : "Despre Compania Noastră";
   
   const aboutText = language === 'en'
-    ? `We're a passionate outsourcing team offering software automation,
-       AI-driven solutions, and scraping. Even though we're at the start
-       of our journey, our dedication to delivering top-notch results is
-       unwavering.`
-    : `Suntem o echipă pasionată de externalizare, oferind automatizare software,
-       soluții bazate pe AI și scraping. Deși suntem la începutul
-       călătoriei noastre, dedicarea noastră pentru livrarea unor rezultate de top
-       este neclintită.`;
+    ? "We're a passionate team specializing in software automation, AI solutions, and data extraction. Though we're relatively new, our commitment to excellence drives everything we do."
+    : "Suntem o echipă pasionată, specializată în automatizare software, soluții AI și extragere de date. Deși suntem relativ noi, angajamentul nostru pentru excelență motivează tot ceea ce facem.";
+
+  // Values content
+  const values = [
+    {
+      icon: FaLightbulb,
+      title: language === 'en' ? "Innovation" : "Inovație",
+      description: language === 'en' 
+        ? "We constantly explore new technologies to deliver cutting-edge solutions."
+        : "Explorăm constant noi tehnologii pentru a oferi soluții de ultimă generație."
+    },
+    {
+      icon: FaUsers,
+      title: language === 'en' ? "Collaboration" : "Colaborare",
+      description: language === 'en'
+        ? "We work closely with our clients to ensure their needs are fully met."
+        : "Lucrăm îndeaproape cu clienții noștri pentru a ne asigura că nevoile lor sunt pe deplin satisfăcute."
+    },
+    {
+      icon: FaCode,
+      title: language === 'en' ? "Quality" : "Calitate",
+      description: language === 'en'
+        ? "We pride ourselves on clean, efficient, and maintainable code."
+        : "Suntem mândri de codul nostru curat, eficient și ușor de întreținut."
+    }
+  ];
 
   return (
-    <Box position="relative" minH="100vh" overflow="hidden">
-      {/* Background gradient */}
-      <Box
-        position="absolute"
-        top={0}
-        left={0}
-        w="100%"
-        h="100%"
-        bgGradient={gradientBg}
-        zIndex={-2}
-      />
-
-      <Flex
-        direction="column"
-        justify="center"
-        align="center"
-        minH="100vh"
-        px={4}
-        textAlign="center"
-        color="white"
-        position="relative"
-        zIndex={1}
-      >
+    <Box minH="100vh" bg="white">
+      <Container maxW="container.lg" pt={{ base: 20, md: 32 }} pb={{ base: 16, md: 24 }}>
         {loading ? (
-          <Stack spacing={4} maxW="600px" mx="auto">
-            <Center>
-              <MotionBox
-                animate={{ rotate: 360 }}
-                transition={{ repeat: Infinity, duration: 2, ease: 'linear' }}
-              >
-                <FaRobot size={50} />
-              </MotionBox>
-            </Center>
-            <Skeleton height="30px" />
-            <Skeleton height="20px" />
-            <Skeleton height="20px" />
-          </Stack>
+          <Flex direction="column" align="center" gap={8}>
+            <MotionBox
+              animate={{ rotate: 360 }}
+              transition={{ repeat: Infinity, duration: 2, ease: 'linear' }}
+              color="brand.500"
+              fontSize="4xl"
+            >
+              <FaRobot size={50} />
+            </MotionBox>
+            <Skeleton height="40px" width="200px" />
+            <Skeleton height="20px" width="300px" />
+            <Skeleton height="20px" width="250px" />
+          </Flex>
         ) : (
-          <>
-            <Heading fontSize={{ base: '3xl', md: '5xl' }} mb={4}>
-              <TypedText text={headingText} speed={30} />
-            </Heading>
-            <TypedText text={aboutText} />
-          </>
+          <Flex direction="column" align={{ base: 'center', lg: 'flex-start' }}>
+            <Box mb={16} maxW="800px" mx="auto" textAlign="center">
+              <Heading 
+                as="h1" 
+                size="2xl" 
+                mb={6} 
+                color="gray.800"
+              >
+                <TypedText text={headingText} speed={30} />
+              </Heading>
+              
+              <Text 
+                fontSize="xl" 
+                color="gray.600"
+                lineHeight="1.8"
+              >
+                <TypedText text={aboutText} />
+              </Text>
+            </Box>
+            
+            <Box w="100%">
+              <Heading 
+                as="h2" 
+                size="xl" 
+                mb={10} 
+                textAlign="center"
+                color="gray.800"
+              >
+                {language === 'en' ? "Our Values" : "Valorile Noastre"}
+              </Heading>
+              
+              <SimpleGrid columns={{ base: 1, md: 3 }} spacing={10} w="100%">
+                {values.map((value, idx) => (
+                  <MotionBox
+                    key={idx}
+                    p={8}
+                    borderRadius="lg"
+                    boxShadow="sm"
+                    bg="white"
+                    textAlign="center"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.2 }}
+                  >
+                    <Icon 
+                      as={value.icon} 
+                      boxSize={12} 
+                      color="brand.500" 
+                      mb={4} 
+                    />
+                    <Heading as="h3" size="md" mb={4} color="gray.800">
+                      {value.title}
+                    </Heading>
+                    <Text color="gray.600">
+                      {value.description}
+                    </Text>
+                  </MotionBox>
+                ))}
+              </SimpleGrid>
+            </Box>
+          </Flex>
         )}
-      </Flex>
+      </Container>
     </Box>
   );
 };
