@@ -144,7 +144,7 @@ const ContactPage: React.FC<ContactPageProps> = ({ language }) => {
   const thankYouText = language === 'en' ? "Thank you for your message. We'll get back to you soon!" : "Mulțumim pentru mesaj. Vă vom contacta în curând!";
 
   // Color mode values
-  const bg = useColorModeValue('white', 'darkBg.900');
+  const bg = useColorModeValue('white', 'darkBg.700');
   const cardBg = useColorModeValue('white', 'darkBg.800');
   const textColor = useColorModeValue('gray.800', 'gray.100');
   const subtextColor = useColorModeValue('gray.600', 'gray.300');

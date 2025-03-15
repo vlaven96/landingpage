@@ -11,15 +11,18 @@ import {
   VStack,
   HStack,
   Divider,
-  Badge
+  Badge,
+  SimpleGrid,
+  Icon
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { Language } from '../App';
 import NeuralNetworkAnimation from './NeuralNetworkAnimation';
-import { FaArrowRight } from 'react-icons/fa';
+import { FaArrowRight, FaCheckCircle } from 'react-icons/fa';
 
 const MotionBox = motion(Box);
 const MotionText = motion(Text);
+const MotionFlex = motion(Flex);
 
 interface HomePageProps {
   language: Language;
@@ -48,12 +51,47 @@ const HomePage: React.FC<HomePageProps> = ({ language }) => {
     : 'Programează o Consultație Gratuită';
 
   // Color mode values
-  const bg = useColorModeValue('white', 'darkBg.900');
+  const bg = useColorModeValue('white', 'darkBg.700');
   const cardBg = useColorModeValue('white', 'darkBg.800');
   const textColor = useColorModeValue('gray.800', 'gray.100');
   const subtextColor = useColorModeValue('gray.600', 'gray.300');
   const highlightColor = useColorModeValue('brand.500', 'brand.300');
   const badgeBg = useColorModeValue('brand.50', 'whiteAlpha.200');
+  const accentColor = useColorModeValue('brand.500', 'brand.300');
+  const highlightBg = useColorModeValue('brand.50', 'darkBg.700');
+  const sectionBg = useColorModeValue('white', 'gray.900');
+  
+  // Why Choose Us section content
+  const whyChooseUsTitle = language === 'en' 
+    ? "Why Choose Our Services" 
+    : "De Ce Să Alegi Serviciile Noastre";
+    
+  const whyChooseUsFeatures = [
+    {
+      title: language === 'en' ? "Tailored Solutions" : "Soluții Personalizate",
+      description: language === 'en' 
+        ? "We design custom solutions that address your specific challenges."
+        : "Proiectăm soluții personalizate care abordează provocările tale specifice."
+    },
+    {
+      title: language === 'en' ? "Transparent Communication" : "Comunicare Transparentă",
+      description: language === 'en'
+        ? "Clear, honest communication throughout the entire project lifecycle."
+        : "Comunicare clară și onestă pe tot parcursul ciclului de viață al proiectului."
+    },
+    {
+      title: language === 'en' ? "Industry Expertise" : "Expertiză în Industrie",
+      description: language === 'en'
+        ? "Deep knowledge of technology trends and best practices."
+        : "Cunoștințe profunde despre tendințele și cele mai bune practici din tehnologie."
+    },
+    {
+      title: language === 'en' ? "Ongoing Support" : "Suport Continuu",
+      description: language === 'en'
+        ? "We're partners in your success, offering continued assistance after launch."
+        : "Suntem parteneri în succesul tău, oferind asistență continuă după lansare."
+    }
+  ];
   
   return (
     <Box minH="100vh" bg={bg} overflowX="hidden">
@@ -163,64 +201,90 @@ const HomePage: React.FC<HomePageProps> = ({ language }) => {
         </Flex>
       </Container>
       
-      {/* Features Section */}
-      <Box bg={useColorModeValue('gray.50', 'darkBg.800')} py={20}>
+      {/* Why Choose Our Services Section - replacing "Our Services" */}
+      <Box 
+        bg={sectionBg} 
+        py={20}
+        borderTop="1px solid"
+        borderBottom="1px solid"
+        borderColor={useColorModeValue('gray.200', 'gray.700')}
+      >
         <Container maxW="container.xl">
-          <Heading 
-            as="h2" 
-            size="xl" 
-            textAlign="center" 
-            mb={16}
-            color={textColor}
-          >
-            {language === 'en' ? 'Our Services' : 'Serviciile Noastre'}
-          </Heading>
-          
-          <Stack 
-            direction={{ base: 'column', md: 'row' }}
-            spacing={8}
-            justify="center"
-          >
-            {[
-              {
-                title: language === 'en' ? 'AI Automation' : 'Automatizare AI',
-                description: language === 'en' 
-                  ? 'Smart solutions that learn and adapt to your business needs'
-                  : 'Soluții inteligente care învață și se adaptează nevoilor afacerii tale'
-              },
-              {
-                title: language === 'en' ? 'Web Scraping' : 'Web Scraping',
-                description: language === 'en'
-                  ? 'Extract valuable data to drive your business decisions'
-                  : 'Extrage date valoroase pentru a-ți ghida deciziile de afaceri'
-              },
-              {
-                title: language === 'en' ? 'Custom Development' : 'Dezvoltare Personalizată',
-                description: language === 'en'
-                  ? 'Bespoke software solutions tailored to your unique requirements'
-                  : 'Soluții software personalizate adaptate cerințelor tale unice'
-              }
-            ].map((feature, idx) => (
-              <MotionBox
-                key={idx}
-                bg={cardBg}
-                p={8}
-                borderRadius="lg"
-                boxShadow="sm"
-                flex="1"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 * idx, duration: 0.5 }}
+          <VStack spacing={12} align="stretch">
+            <Heading
+              as="h2"
+              size="xl"
+              textAlign="center"
+              mb={6}
+              color={textColor}
+            >
+              {whyChooseUsTitle}
+            </Heading>
+            
+            {/* Line with Badge */}
+            <Flex justify="center" mb={6}>
+              <Box position="relative" width="100%" maxW="300px">
+                <Divider borderColor={accentColor} borderWidth="2px" opacity={0.3} />
+                <Badge 
+                  colorScheme="brand" 
+                  position="absolute" 
+                  top="-10px" 
+                  left="50%" 
+                  transform="translateX(-50%)"
+                  px={3}
+                  py={1}
+                >
+                  {language === 'en' ? "Benefits" : "Beneficii"}
+                </Badge>
+              </Box>
+            </Flex>
+            
+            {/* Why Choose Us Features */}
+            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={10}>
+              {whyChooseUsFeatures.map((feature, idx) => (
+                <MotionFlex
+                  key={idx}
+                  direction="column"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 * idx + 0.5, duration: 0.5 }}
+                  p={5}
+                  borderRadius="lg"
+                  bg={highlightBg}
+                  _hover={{ 
+                    transform: 'translateY(-5px)',
+                    boxShadow: 'md'
+                  }}
+                  transition="all 0.3s"
+                >
+                  <HStack spacing={4} align="flex-start" mb={2}>
+                    <Icon as={FaCheckCircle} color={accentColor} boxSize={5} mt={1} />
+                    <Heading as="h3" size="md" color={textColor}>
+                      {feature.title}
+                    </Heading>
+                  </HStack>
+                  <Text color={subtextColor} pl={9}>
+                    {feature.description}
+                  </Text>
+                </MotionFlex>
+              ))}
+            </SimpleGrid>
+            
+            {/* Call to Action */}
+            <Flex justify="center" mt={10}>
+              <Button
+                size="lg"
+                colorScheme="brand"
+                px={8}
+                _hover={{ transform: 'translateY(-2px)', boxShadow: 'lg' }}
+                transition="all 0.2s"
+                onClick={() => window.location.href = '/services'}
+                rightIcon={<FaArrowRight />}
               >
-                <Heading as="h3" size="md" mb={4} color={textColor}>
-                  {feature.title}
-                </Heading>
-                <Text color={subtextColor}>
-                  {feature.description}
-                </Text>
-              </MotionBox>
-            ))}
-          </Stack>
+                {language === 'en' ? "Explore Our Services" : "Explorează Serviciile Noastre"}
+              </Button>
+            </Flex>
+          </VStack>
         </Container>
       </Box>
     </Box>

@@ -62,7 +62,7 @@ const ServicesPage: React.FC<ServicesPageProps> = ({ language }) => {
     : "Soluții de ultimă generație adaptate nevoilor afacerii tale";
 
   // Color mode values
-  const bg = useColorModeValue('white', 'darkBg.900');
+  const bg = useColorModeValue('white', 'darkBg.700');
   const cardBg = useColorModeValue('white', 'darkBg.800');
   const textColor = useColorModeValue('gray.800', 'gray.100');
   const subtextColor = useColorModeValue('gray.600', 'gray.300');

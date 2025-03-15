@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box } from '@chakra-ui/react';
+import { Box, ChakraProvider, extendTheme } from '@chakra-ui/react';
 import Navbar from './components/Navbar';
 import Chat from './components/Chat';
 import HomePage from './components/HomePage';
@@ -9,6 +9,41 @@ import TeamPage from './components/TeamPage';
 import ContactPage from './components/ContactPage';
 import DynamicPage from './components/DynamicPage';
 import OurProcessPage from './components/OurProcessPage';
+
+// Define a custom theme with improved dark mode colors
+const theme = extendTheme({
+  colors: {
+    brand: {
+      50: '#e6f7ff',
+      100: '#b3e0ff',
+      200: '#80c9ff',
+      300: '#4db2ff',
+      400: '#269bff',
+      500: '#0084ff', // primary brand color
+      600: '#0066cc',
+      700: '#004d99',
+      800: '#003366',
+      900: '#001a33',
+    },
+    darkBg: {
+      700: '#2d3748', // slightly lighter dark background
+      800: '#1e2536', // medium dark background
+      900: '#171923', // darkest background (for chat)
+    }
+  },
+  config: {
+    initialColorMode: 'light',
+    useSystemColorMode: true,
+  },
+  styles: {
+    global: (props: any) => ({
+      body: {
+        bg: props.colorMode === 'dark' ? 'darkBg.700' : 'white',
+        color: props.colorMode === 'dark' ? 'white' : 'gray.800',
+      },
+    }),
+  },
+});
 
 // "Default" pages
 export type DefaultPageName = 'home' | 'about' | 'services' | 'team' | 'contact' | 'process';
@@ -132,20 +167,22 @@ const App: React.FC = () => {
   };
 
   return (
-    <Box minH="100vh" position="relative">
-      <Navbar
-        unlockedPages={unlockedPages}
-        currentPage={currentPage}
-        onNavigate={handleNavigate}
-        dynamicPages={dynamicPages}
-        language={language}
-        onToggleLanguage={toggleLanguage}
-      />
-      {renderPage()}
+    <ChakraProvider theme={theme}>
+      <Box minH="100vh" position="relative">
+        <Navbar
+          unlockedPages={unlockedPages}
+          currentPage={currentPage}
+          onNavigate={handleNavigate}
+          dynamicPages={dynamicPages}
+          language={language}
+          onToggleLanguage={toggleLanguage}
+        />
+        {renderPage()}
 
-      {/* The Chat can unlock existing pages or create new ones */}
-      <Chat onUnlockOrCreatePage={unlockOrCreatePage} />
-    </Box>
+        {/* The Chat can unlock existing pages or create new ones */}
+        <Chat onUnlockOrCreatePage={unlockOrCreatePage} />
+      </Box>
+    </ChakraProvider>
   );
 };
 
