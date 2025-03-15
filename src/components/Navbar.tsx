@@ -84,6 +84,17 @@ const NavBar: React.FC<NavBarProps> = ({
     }
   };
 
+  const handleNavigate = (pageId: PageIdentifier) => {
+    // Scroll to top when navigation item is clicked
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+    
+    // Then call the navigation function from props
+    onNavigate(pageId);
+  };
+
   return (
     <Box 
       as="nav" 
@@ -105,7 +116,7 @@ const NavBar: React.FC<NavBarProps> = ({
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
             cursor="pointer"
-            onClick={() => onNavigate('home')}
+            onClick={() => handleNavigate('home')}
           >
             <Flex align="center">
               <Text 
@@ -135,7 +146,7 @@ const NavBar: React.FC<NavBarProps> = ({
                   borderBottom={currentPage === item.name ? '2px solid' : 'none'}
                   borderColor="brand.500"
                   borderRadius="0"
-                  onClick={() => onNavigate(item.name as PageIdentifier)}
+                  onClick={() => handleNavigate(item.name as PageIdentifier)}
                   _hover={{
                     color: 'brand.500',
                     bg: 'transparent'
@@ -209,7 +220,7 @@ const NavBar: React.FC<NavBarProps> = ({
                 variant="ghost"
                 justifyContent="flex-start"
                 onClick={() => {
-                  onNavigate(item.name as PageIdentifier);
+                  handleNavigate(item.name as PageIdentifier);
                   onToggle();
                 }}
                 color={currentPage === item.name ? 'brand.500' : textColor}
