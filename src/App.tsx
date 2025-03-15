@@ -63,9 +63,9 @@ export interface DynamicPageData {
 
 const App: React.FC = () => {
   /**
-   * 1) Keep track of default/dynamic pages in the nav
+   * 1) Keep track of default/dynamic pages in the nav - only home is initially visible
    */
-  const [unlockedPages, setUnlockedPages] = useState<PageIdentifier[]>(['home', 'about', 'services', 'team', 'contact', 'process']);
+  const [unlockedPages, setUnlockedPages] = useState<PageIdentifier[]>(['home']);
 
   /**
    * 2) Array storing dynamic page data
