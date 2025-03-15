@@ -11,17 +11,13 @@ import {
   useColorModeValue
 } from '@chakra-ui/react';
 import { MoonIcon, SunIcon } from '@chakra-ui/icons';
-import { PageName, Language } from '../App';
+import { DynamicPageData, PageIdentifier, Language } from '../App';
 
-interface NavbarProps {
-  unlockedPages: PageName[];
-  currentPage: PageName;
-  onNavigate: (page: PageName) => void;
-  language: Language;
-  onToggleLanguage: () => void;
-}
-
-const PAGE_LABELS: Record<PageName, { en: string; ro: string }> = {
+/**
+ * For "default" pages, we have both EN and RO labels.
+ * If a page is dynamic, we store its `title` in dynamicPages (no additional translation).
+ */
+const DEFAULT_PAGE_LABELS: Record<string, { en: string; ro: string }> = {
   home: { en: 'Home', ro: 'Acasă' },
   about: { en: 'About', ro: 'Despre Noi' },
   services: { en: 'Services', ro: 'Servicii' },
@@ -29,10 +25,26 @@ const PAGE_LABELS: Record<PageName, { en: string; ro: string }> = {
   contact: { en: 'Contact', ro: 'Contact' }
 };
 
+interface NavbarProps {
+  /** A list of page IDs that are currently unlocked (could be default or dynamic). */
+  unlockedPages: PageIdentifier[];
+  /** The user’s current page. */
+  currentPage: PageIdentifier;
+  /** Called when the user clicks a nav button. */
+  onNavigate: (pageId: PageIdentifier) => void;
+  /** The list of dynamic pages that have been created by the chatbot. */
+  dynamicPages: DynamicPageData[];
+  /** Current language (en/ro). */
+  language: Language;
+  /** Function to toggle language. */
+  onToggleLanguage: () => void;
+}
+
 const Navbar: React.FC<NavbarProps> = ({
   unlockedPages,
   currentPage,
   onNavigate,
+  dynamicPages,
   language,
   onToggleLanguage
 }) => {
@@ -51,7 +63,7 @@ const Navbar: React.FC<NavbarProps> = ({
       zIndex="1000"
     >
       <Flex alignItems="center">
-        {/* Brand / Logo */}
+        {/** Brand / Logo, toggles to 'home' */}
         <Heading
           size="md"
           cursor="pointer"
@@ -62,24 +74,49 @@ const Navbar: React.FC<NavbarProps> = ({
         </Heading>
 
         <HStack spacing={4}>
-          {/* Only show unlocked pages */}
-          {unlockedPages.map((page) => (
-            <Button
-              key={page}
-              variant={currentPage === page ? 'solid' : 'outline'}
-              colorScheme="teal"
-              size="sm"
-              onClick={() => onNavigate(page)}
-            >
-              {/* Translate each page label */}
-              {PAGE_LABELS[page][language]}
-            </Button>
-          ))}
+          {/** Render nav buttons for each unlocked page (default or dynamic) */}
+          {unlockedPages.map((pageId) => {
+            // If it's one of our default pages, show the translated label
+            if (DEFAULT_PAGE_LABELS[pageId]) {
+              const labelObj = DEFAULT_PAGE_LABELS[pageId];
+              const label = labelObj[language]; // 'Home' or 'Acasă' etc.
+              return (
+                <Button
+                  key={pageId}
+                  variant={currentPage === pageId ? 'solid' : 'outline'}
+                  colorScheme="teal"
+                  size="sm"
+                  onClick={() => onNavigate(pageId)}
+                >
+                  {label}
+                </Button>
+              );
+            }
+
+            // Otherwise, see if it's a dynamic page
+            const dp = dynamicPages.find((d) => d.id === pageId);
+            if (dp) {
+              return (
+                <Button
+                  key={dp.id}
+                  variant={currentPage === dp.id ? 'solid' : 'outline'}
+                  colorScheme="teal"
+                  size="sm"
+                  onClick={() => onNavigate(dp.id)}
+                >
+                  {dp.title}
+                </Button>
+              );
+            }
+
+            // If something else or not found, ignore
+            return null;
+          })}
         </HStack>
 
         <Spacer />
 
-        {/* Language Toggle Button (EN / RO) */}
+        {/** Language Toggle Button (EN / RO) */}
         <Button
           size="sm"
           colorScheme="orange"
@@ -90,7 +127,7 @@ const Navbar: React.FC<NavbarProps> = ({
           {language === 'en' ? 'RO' : 'EN'}
         </Button>
 
-        {/* Dark/Light Mode Toggle */}
+        {/** Dark/Light Mode Toggle */}
         <IconButton
           aria-label="Toggle dark mode"
           icon={colorMode === 'light' ? <MoonIcon /> : <SunIcon />}

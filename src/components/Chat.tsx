@@ -1,10 +1,19 @@
 import React, { useState } from 'react';
-import { Box, Flex, Button, Input, Text, useColorModeValue, useColorMode } from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  Button,
+  Input,
+  Text,
+  useColorModeValue,
+  useColorMode
+} from '@chakra-ui/react';
 import { motion } from 'framer-motion';
-import { PageName } from '../App';
+import { PageName, PageIdentifier, DynamicPageData } from '../App';
 
 interface ChatProps {
-  onUnlockPage: (page: PageName) => void;
+  // Instead of only “unlock page,” we might also create a new dynamic page
+  onUnlockOrCreatePage: (pageId: PageIdentifier, pageData?: DynamicPageData) => void;
 }
 
 type Message = {
@@ -12,11 +21,12 @@ type Message = {
   text: string;
 };
 
-const VALID_COMMANDS: PageName[] = ['about', 'services', 'team', 'contact', 'home'];
+// Our known pages
+const KNOWN_PAGES: PageName[] = ['home', 'about', 'services', 'team', 'contact'];
 
 const MotionBox = motion(Box);
 
-const Chat: React.FC<ChatProps> = ({ onUnlockPage }) => {
+const Chat: React.FC<ChatProps> = ({ onUnlockOrCreatePage }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
 
@@ -25,33 +35,47 @@ const Chat: React.FC<ChatProps> = ({ onUnlockPage }) => {
   const inputBg = useColorModeValue('gray.100', 'gray.600');
   const borderCol = useColorModeValue('gray.700', 'gray.600');
 
+  /**
+   * A mock “chatbot” that checks if the user’s text
+   * matches known pages. Otherwise, we create a new page.
+   */
   const handleSend = () => {
-    const trimmed = inputValue.trim().toLowerCase();
-    if (!trimmed) return;
+    const userMsg = inputValue.trim();
+    if (!userMsg) return;
 
     // Add user message
-    setMessages((prev) => [...prev, { type: 'user', text: inputValue }]);
+    setMessages((prev) => [...prev, { type: 'user', text: userMsg }]);
 
-    // Check if valid command
-    if (VALID_COMMANDS.includes(trimmed as PageName)) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          type: 'system',
-          text: `Unlocking or navigating to "${trimmed}" page...`
-        }
-      ]);
-      onUnlockPage(trimmed as PageName);
-    } else {
-      setMessages((prev) => [
-        ...prev,
-        {
-          type: 'system',
-          text: 'Unrecognized command. Try: home, about, services, team, contact.'
-        }
-      ]);
+    const lower = userMsg.toLowerCase();
+
+    // 1) Check if user asked for a known page
+    const found = KNOWN_PAGES.find((p) => lower.includes(p));
+    if (found) {
+      const systemText = `Navigating to "${found}" page...`;
+      setMessages((prev) => [...prev, { type: 'system', text: systemText }]);
+      onUnlockOrCreatePage(found);
+      setInputValue('');
+      return;
     }
 
+    // 2) Otherwise, we “dynamically create” a new page
+    //    We'll do a minimal approach: the chatbot calls this "Custom Page"
+    //    The "content" is just the user's text repeated or a “Chatbot answer”.
+    const dynamicPageId = `custom-page-${Date.now()}`; // unique ID
+    const systemText = `Creating a new custom page for your request...`;
+
+    setMessages((prev) => [...prev, { type: 'system', text: systemText }]);
+
+    // Suppose we want the page’s title = “Your Custom Topic”
+    // and the content = “User said: [userMsg]”
+    // or some “AI” text. We'll keep it simple here:
+    const newPageData: DynamicPageData = {
+      id: dynamicPageId,
+      title: 'Custom Topic',
+      content: `User question: "${userMsg}"\n\n(This is a custom dynamic page. Use actual AI to fill more content here.)`
+    };
+
+    onUnlockOrCreatePage(dynamicPageId, newPageData);
     setInputValue('');
   };
 
@@ -93,7 +117,7 @@ const Chat: React.FC<ChatProps> = ({ onUnlockPage }) => {
       {/* Input area */}
       <Flex p={2} borderTop="1px solid" borderColor={borderCol}>
         <Input
-          placeholder='Type "about", "services", "team", or "contact"'
+          placeholder='Ask me anything: "services", "team", or new topic...'
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           bg={inputBg}
