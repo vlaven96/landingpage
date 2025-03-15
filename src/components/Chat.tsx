@@ -28,7 +28,7 @@ type Message = {
 };
 
 // Our known pages
-const KNOWN_PAGES: PageName[] = ['home', 'about', 'services', 'team', 'contact'];
+const KNOWN_PAGES: PageName[] = ['home', 'about', 'services', 'team', 'contact', 'process'];
 
 const MotionBox = motion(Box);
 const MotionFlex = motion(Flex);

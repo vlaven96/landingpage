@@ -7,11 +7,16 @@ import {
   Text,
   Button,
   Stack,
-  useColorModeValue
+  useColorModeValue,
+  VStack,
+  HStack,
+  Divider,
+  Badge
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { Language } from '../App';
 import NeuralNetworkAnimation from './NeuralNetworkAnimation';
+import { FaArrowRight } from 'react-icons/fa';
 
 const MotionBox = motion(Box);
 const MotionText = motion(Text);
@@ -23,18 +28,32 @@ interface HomePageProps {
 const HomePage: React.FC<HomePageProps> = ({ language }) => {
   // Content
   const headingText = language === 'en'
-    ? 'Outsourcing Your Tech Needs'
-    : 'Externalizează Nevoile Tale Tehnice';
+    ? 'Empowering Small Businesses Through Smart Technology Solutions'
+    : 'Dezvoltarea Afacerilor Mici prin Soluții Tehnologice Inteligente';
 
   const subText = language === 'en'
-    ? 'We deliver cutting-edge automation, AI solutions, and scalable software to help your business grow faster.'
-    : 'Oferim automatizări avansate, soluții AI și software scalabil pentru a ajuta afacerea ta să crească mai rapid.';
+    ? 'Automation • AI Integration • Web Development • Data Engineering'
+    : 'Automatizare • Integrare AI • Dezvoltare Web • Inginerie de Date';
+    
+  const introText = language === 'en'
+    ? 'At TechSolutions, our mission is simple: help small businesses embrace digital transformation with cutting-edge solutions that enhance efficiency, reduce costs, and unlock new opportunities. We\'re a small but highly experienced team based in Romania, with a global reach and a passion for innovation.'
+    : 'La TechSolutions, misiunea noastră este simplă: să ajutăm afacerile mici să adopte transformarea digitală cu soluții avansate care cresc eficiența, reduc costurile și deblochează noi oportunități. Suntem o echipă mică dar cu experiență vastă din România, cu acoperire globală și pasiune pentru inovație.';
+    
+  const ctaText = language === 'en'
+    ? 'Ready to transform your business?'
+    : 'Pregătit să-ți transformi afacerea?';
+    
+  const buttonText = language === 'en'
+    ? 'Book a Free Consultation'
+    : 'Programează o Consultație Gratuită';
 
   // Color mode values
   const bg = useColorModeValue('white', 'darkBg.900');
   const cardBg = useColorModeValue('white', 'darkBg.800');
   const textColor = useColorModeValue('gray.800', 'gray.100');
   const subtextColor = useColorModeValue('gray.600', 'gray.300');
+  const highlightColor = useColorModeValue('brand.500', 'brand.300');
+  const badgeBg = useColorModeValue('brand.50', 'whiteAlpha.200');
   
   return (
     <Box minH="100vh" bg={bg} overflowX="hidden">
@@ -47,50 +66,91 @@ const HomePage: React.FC<HomePageProps> = ({ language }) => {
           gap={{ base: 12, lg: 6 }}
         >
           {/* Left Content */}
-          <Box maxW={{ base: '100%', lg: '40%' }} textAlign={{ base: 'center', lg: 'left' }}>
+          <VStack 
+            maxW={{ base: '100%', lg: '45%' }} 
+            spacing={6} 
+            align={{ base: 'center', lg: 'flex-start' }}
+            textAlign={{ base: 'center', lg: 'left' }}
+          >
             <MotionBox
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7 }}
+              w="full"
             >
+              <Badge 
+                colorScheme="brand" 
+                bg={badgeBg} 
+                color={highlightColor} 
+                px={3} 
+                py={1} 
+                borderRadius="full" 
+                mb={4}
+                fontSize="sm"
+              >
+                {language === 'en' ? 'Tech Outsourcing Experts' : 'Experți în Externalizare IT'}
+              </Badge>
+              
               <Heading 
                 as="h1" 
                 size="2xl" 
                 lineHeight="1.2"
                 fontWeight="bold"
-                mb={6}
+                mb={4}
                 color={textColor}
               >
                 {headingText}
               </Heading>
               
               <MotionText
-                fontSize="xl"
-                color={subtextColor}
-                mb={8}
+                fontSize="lg"
+                fontWeight="medium"
+                color={highlightColor}
+                mb={5}
+                letterSpacing="wide"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.3, duration: 0.7 }}
+                transition={{ delay: 0.2, duration: 0.7 }}
               >
                 {subText}
               </MotionText>
-              
-              <MotionBox
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5, duration: 0.7 }}
-              >
+            </MotionBox>
+            
+            <MotionText
+              fontSize="md"
+              color={subtextColor}
+              mb={6}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4, duration: 0.7 }}
+            >
+              {introText}
+            </MotionText>
+            
+            <MotionBox
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.7 }}
+              w={{ base: 'full', lg: 'auto' }}
+            >
+              <VStack spacing={4} align={{ base: 'center', lg: 'flex-start' }}>
+                <Text fontWeight="bold" color={textColor}>
+                  {ctaText}
+                </Text>
                 <Button 
                   size="lg" 
                   colorScheme="brand"
-                  mb={{ base: 10, lg: 0 }}
+                  rightIcon={<FaArrowRight />}
+                  px={8}
+                  boxShadow="md"
+                  _hover={{ transform: 'translateY(-2px)', boxShadow: 'lg' }}
                 >
-                  {language === 'en' ? 'Get Started' : 'Începe Acum'}
+                  {buttonText}
                 </Button>
-              </MotionBox>
+              </VStack>
             </MotionBox>
-          </Box>
-          
+          </VStack>
+            
           {/* Right Content - Neural Network Animation */}
           <MotionBox
             initial={{ opacity: 0, scale: 0.8 }}

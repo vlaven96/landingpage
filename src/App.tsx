@@ -8,9 +8,10 @@ import ServicesPage from './components/ServicesPage';
 import TeamPage from './components/TeamPage';
 import ContactPage from './components/ContactPage';
 import DynamicPage from './components/DynamicPage';
+import OurProcessPage from './components/OurProcessPage';
 
 // "Default" pages
-export type DefaultPageName = 'home' | 'about' | 'services' | 'team' | 'contact';
+export type DefaultPageName = 'home' | 'about' | 'services' | 'team' | 'contact' | 'process';
 
 // If you have dynamic pages, each is identified by a string ID
 export type PageIdentifier = DefaultPageName | string;
@@ -29,7 +30,7 @@ const App: React.FC = () => {
   /**
    * 1) Keep track of default/dynamic pages in the nav
    */
-  const [unlockedPages, setUnlockedPages] = useState<PageIdentifier[]>(['home']);
+  const [unlockedPages, setUnlockedPages] = useState<PageIdentifier[]>(['home', 'about', 'services', 'team', 'contact', 'process']);
 
   /**
    * 2) Array storing dynamic page data
@@ -72,7 +73,7 @@ const App: React.FC = () => {
    * Quick helper: is page one of the default ones
    */
   const isDefaultPage = (p: PageIdentifier): p is DefaultPageName => {
-    return ['home', 'about', 'services', 'team', 'contact'].includes(p as any);
+    return ['home', 'about', 'services', 'team', 'contact', 'process'].includes(p as any);
   };
 
   /**
@@ -116,6 +117,8 @@ const App: React.FC = () => {
           return <TeamPage language={language} />;
         case 'contact':
           return <ContactPage language={language} />;
+        case 'process':
+          return <OurProcessPage language={language} />;
         default:
           return <HomePage language={language} />;
       }

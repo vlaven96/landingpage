@@ -13,7 +13,13 @@ import {
   Container,
   Collapse,
   VStack,
-  Divider
+  Divider,
+  Stack,
+  Link,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  useBreakpointValue
 } from '@chakra-ui/react';
 import { HamburgerIcon, CloseIcon, MoonIcon, SunIcon } from '@chakra-ui/icons';
 import { motion } from 'framer-motion';
@@ -50,12 +56,33 @@ const NavBar: React.FC<NavBarProps> = ({
     { name: 'services', label: language === 'en' ? 'Services' : 'Servicii' },
     { name: 'team', label: language === 'en' ? 'Team' : 'Echipa' },
     { name: 'contact', label: language === 'en' ? 'Contact' : 'Contact' },
+    { name: 'process', label: language === 'en' ? 'Our Process' : 'Procesul Nostru' },
   ];
 
   // Filter items to only show unlocked pages
   const availableNavItems = navItems.filter(item => 
     unlockedPages.includes(item.name as PageIdentifier)
   );
+
+  // Page name mappings for both languages
+  const getPageName = (pageId: PageIdentifier): string => {
+    switch (pageId) {
+      case 'home':
+        return language === 'en' ? 'Home' : 'Acasă';
+      case 'about':
+        return language === 'en' ? 'About' : 'Despre';
+      case 'services':
+        return language === 'en' ? 'Services' : 'Servicii';
+      case 'team':
+        return language === 'en' ? 'Team' : 'Echipa';
+      case 'contact':
+        return language === 'en' ? 'Contact' : 'Contact';
+      case 'process':
+        return language === 'en' ? 'Our Process' : 'Procesul Nostru';
+      default:
+        return pageId as string; // For dynamic pages, we'll just use the ID
+    }
+  };
 
   return (
     <Box 
@@ -114,7 +141,7 @@ const NavBar: React.FC<NavBarProps> = ({
                     bg: 'transparent'
                   }}
                 >
-                  {item.label}
+                  {getPageName(item.name as PageIdentifier)}
                 </Button>
               </Box>
             ))}
@@ -191,7 +218,7 @@ const NavBar: React.FC<NavBarProps> = ({
                   color: 'brand.500'
                 }}
               >
-                {item.label}
+                {getPageName(item.name as PageIdentifier)}
               </Button>
             ))}
             <Divider />

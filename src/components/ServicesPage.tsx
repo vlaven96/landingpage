@@ -10,7 +10,13 @@ import {
   Button,
   Skeleton,
   SkeletonText,
-  useColorModeValue
+  SkeletonCircle,
+  useColorModeValue,
+  List,
+  ListItem,
+  ListIcon,
+  Divider,
+  VStack
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { 
@@ -19,13 +25,22 @@ import {
   FaDatabase, 
   FaChartLine, 
   FaServer, 
-  FaCogs,
-  FaArrowRight
+  FaMobileAlt,
+  FaCheckCircle,
+  FaComments,
+  FaTasks,
+  FaChartBar,
+  FaGlobe,
+  FaLaptopCode,
+  FaClipboardList,
+  FaStream,
+  FaSearch
 } from 'react-icons/fa';
 import TypedText from './TypedText';
 import { Language } from '../App';
 
 const MotionBox = motion(Box);
+const MotionFlex = motion(Flex);
 
 interface ServicesPageProps {
   language: Language;
@@ -53,97 +68,105 @@ const ServicesPage: React.FC<ServicesPageProps> = ({ language }) => {
   const subtextColor = useColorModeValue('gray.600', 'gray.300');
   const featureBg = useColorModeValue('brand.50', 'darkBg.700');
   const featureHeadingColor = useColorModeValue('brand.600', 'brand.200');
+  const bulletColor = useColorModeValue('brand.500', 'brand.300');
 
-  // Define services
-  const services = [
+  // Define service categories
+  const serviceCategories = [
     {
+      title: language === 'en' ? "Automation & AI Integration" : "Automatizare & Integrare AI",
+      description: language === 'en'
+        ? "Harness the power of automation to streamline processes and cut operational costs. Our AI-driven services include:"
+        : "Valorifică puterea automatizării pentru a eficientiza procesele și a reduce costurile operaționale. Serviciile noastre AI includ:",
       icon: FaRobot,
-      title: language === 'en' ? "AI Integration" : "Integrare AI",
-      description: language === 'en'
-        ? "Implement advanced AI tools to automate tasks and gain valuable insights from your data."
-        : "Implementează instrumente AI avansate pentru a automatiza sarcini și a obține informații valoroase din datele tale.",
-      color: "blue.500"
+      color: "blue.500",
+      features: language === 'en' 
+        ? [
+            { text: "Chatbots & Virtual Assistants for faster customer support", icon: FaComments },
+            { text: "Workflow Automation to eliminate repetitive tasks", icon: FaTasks },
+            { text: "Intelligent Data Analysis for actionable business insights", icon: FaChartBar }
+          ]
+        : [
+            { text: "Chatboți & Asistenți Virtuali pentru suport clienți mai rapid", icon: FaComments },
+            { text: "Automatizare Flux de Lucru pentru eliminarea sarcinilor repetitive", icon: FaTasks },
+            { text: "Analiză Inteligentă a Datelor pentru insights de afaceri acționabile", icon: FaChartBar }
+          ]
     },
     {
+      title: language === 'en' ? "Web & Software Development" : "Dezvoltare Web & Software",
+      description: language === 'en'
+        ? "Build a modern, high-performing digital presence that sets you apart. We specialize in:"
+        : "Construiește o prezență digitală modernă și performantă care te diferențiază. Ne specializăm în:",
       icon: FaCode,
-      title: language === 'en' ? "Custom Development" : "Dezvoltare Personalizată",
-      description: language === 'en'
-        ? "Bespoke software solutions designed to address your unique business challenges."
-        : "Soluții software personalizate concepute pentru a aborda provocările unice ale afacerii tale.",
-      color: "green.500"
+      color: "purple.500",
+      features: language === 'en'
+        ? [
+            { text: "Custom Web Applications aligned with your brand identity", icon: FaGlobe },
+            { text: "Responsive Websites optimized for all devices", icon: FaMobileAlt },
+            { text: "Full-Stack Development for end-to-end project delivery", icon: FaLaptopCode }
+          ]
+        : [
+            { text: "Aplicații Web Personalizate aliniate cu identitatea brandului tău", icon: FaGlobe },
+            { text: "Site-uri Web Responsive optimizate pentru toate dispozitivele", icon: FaMobileAlt },
+            { text: "Dezvoltare Full-Stack pentru livrare proiecte end-to-end", icon: FaLaptopCode }
+          ]
     },
     {
+      title: language === 'en' ? "Data Engineering & Analytics" : "Inginerie de Date & Analiză",
+      description: language === 'en'
+        ? "Transform raw data into a competitive advantage. Our data experts help you:"
+        : "Transformă datele brute într-un avantaj competitiv. Experții noștri în date te ajută să:",
       icon: FaDatabase,
-      title: language === 'en' ? "Data Extraction" : "Extragere Date",
-      description: language === 'en'
-        ? "Powerful web scraping tools to gather business intelligence and market insights."
-        : "Instrumente puternice de extragere web pentru a colecta informații de afaceri și date despre piață.",
-      color: "purple.500"
-    },
-    {
-      icon: FaChartLine,
-      title: language === 'en' ? "Automation" : "Automatizare",
-      description: language === 'en'
-        ? "Streamline operations and reduce costs with intelligent workflow automation."
-        : "Eficientizează operațiunile și reduce costurile cu automatizarea inteligentă a fluxului de lucru.",
-      color: "orange.500"
-    },
-    {
-      icon: FaServer,
-      title: language === 'en' ? "Cloud Solutions" : "Soluții Cloud",
-      description: language === 'en'
-        ? "Scalable and secure cloud infrastructure to power your applications."
-        : "Infrastructură cloud scalabilă și sigură pentru a-ți alimenta aplicațiile.",
-      color: "cyan.500"
-    },
-    {
-      icon: FaCogs,
-      title: language === 'en' ? "System Integration" : "Integrare Sisteme",
-      description: language === 'en'
-        ? "Connect your existing systems and software to create a unified business ecosystem."
-        : "Conectează sistemele și software-ul existent pentru a crea un ecosistem de afaceri unificat.",
-      color: "red.500"
+      color: "green.500",
+      features: language === 'en'
+        ? [
+            { text: "Collect & Cleanse data from multiple sources", icon: FaClipboardList },
+            { text: "Set Up Scalable Pipelines for continuous data processing", icon: FaStream },
+            { text: "Implement Advanced Analytics for informed, real-time decision-making", icon: FaSearch }
+          ]
+        : [
+            { text: "Colectezi & Cureți date din multiple surse", icon: FaClipboardList },
+            { text: "Configurezi Pipeline-uri Scalabile pentru procesarea continuă a datelor", icon: FaStream },
+            { text: "Implementezi Analiză Avansată pentru decizii informate în timp real", icon: FaSearch }
+          ]
     }
   ];
-  
-  // Featured service section
-  const featuredService = {
-    title: language === 'en' ? "Enterprise AI Solutions" : "Soluții AI pentru Întreprinderi",
-    description: language === 'en'
-      ? "Our flagship enterprise-grade AI solutions help businesses transform their operations through intelligent automation, predictive analytics, and data-driven decision making."
-      : "Soluțiile noastre AI de nivel enterprise ajută companiile să își transforme operațiunile prin automatizare inteligentă, analize predictive și luarea deciziilor bazate pe date.",
-    buttonText: language === 'en' ? "Learn More" : "Află Mai Multe"
-  };
 
   return (
     <Box minH="100vh" bg={bg}>
       <Container maxW="container.lg" pt={{ base: 20, md: 32 }} pb={{ base: 16, md: 24 }}>
         {loading ? (
-          <Flex direction="column" align="center" gap={8}>
+          <Flex direction="column" align="center" textAlign="center">
             <MotionBox
-              animate={{ rotate: 360 }}
-              transition={{ repeat: Infinity, duration: 2, ease: 'linear' }}
-              color="brand.500"
-              fontSize="4xl"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              mb={6}
             >
-              <FaCogs size={50} />
+              <Icon as={FaServer} fontSize="5xl" color="brand.500" />
             </MotionBox>
-            <Skeleton height="40px" width="200px" />
-            <Skeleton height="20px" width="300px" />
             
-            <SimpleGrid columns={{ base: 1, md: 3 }} spacing={8} width="100%" mt={8}>
-              {[1, 2, 3, 4, 5, 6].map((_, i) => (
-                <Box key={i} p={6} borderRadius="lg" boxShadow="sm">
-                  <Skeleton height="40px" width="40px" mb={4} />
-                  <SkeletonText mt={4} noOfLines={4} spacing={4} />
+            <Skeleton height="40px" width="200px" mb={4} />
+            <SkeletonText noOfLines={2} spacing="4" width="60%" mb={12} />
+            
+            <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={8} w="100%">
+              {[1, 2, 3].map((_, i) => (
+                <Box key={i} p={8} boxShadow="md" borderRadius="lg">
+                  <SkeletonCircle size="16" mb={6} />
+                  <Skeleton height="24px" mb={4} />
+                  <SkeletonText noOfLines={4} spacing="4" mb={6} />
+                  <Skeleton height="10px" width="60%" mb={2} />
+                  <Skeleton height="10px" width="70%" mb={2} />
+                  <Skeleton height="10px" width="50%" mb={4} />
+                  <Skeleton height="40px" width="120px" />
                 </Box>
               ))}
             </SimpleGrid>
           </Flex>
         ) : (
           <Box>
-            {/* Header Section */}
-            <Box textAlign="center" mb={16} maxW="800px" mx="auto">
+            <Flex direction="column" align="center" textAlign="center" mb={16}>
+              <Icon as={FaServer} fontSize="5xl" color="brand.500" mb={6} />
+              
               <Heading 
                 as="h1" 
                 size="2xl" 
@@ -154,92 +177,141 @@ const ServicesPage: React.FC<ServicesPageProps> = ({ language }) => {
               </Heading>
               
               <Text 
-                fontSize="xl" 
+                fontSize="xl"
+                maxW="2xl"
                 color={subtextColor}
               >
                 <TypedText text={introText} />
               </Text>
-            </Box>
+            </Flex>
             
-            {/* Featured Service */}
-            <MotionBox
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              mb={16}
-              bg={featureBg}
-              borderRadius="xl"
-              overflow="hidden"
-              boxShadow="md"
-            >
-              <Flex 
-                direction={{ base: 'column', md: 'row' }} 
-                align="center" 
-                p={{ base: 6, md: 10 }}
-              >
-                <Box flex={1} pr={{ base: 0, md: 8 }} mb={{ base: 6, md: 0 }}>
-                  <Heading as="h2" size="xl" mb={4} color={featureHeadingColor}>
-                    {featuredService.title}
-                  </Heading>
-                  <Text fontSize="lg" color={textColor} mb={6}>
-                    {featuredService.description}
-                  </Text>
-                  <Button 
-                    rightIcon={<FaArrowRight />} 
-                    colorScheme="brand" 
-                    size="lg"
-                  >
-                    {featuredService.buttonText}
-                  </Button>
-                </Box>
-                <Flex 
-                  flex={1} 
-                  justifyContent="center" 
-                  alignItems="center"
-                  bg="brand.500" 
-                  p={10} 
-                  borderRadius="lg"
-                  color="white"
-                >
-                  <Icon as={FaRobot} fontSize="9xl" />
-                </Flex>
-              </Flex>
-            </MotionBox>
-            
-            {/* Services Grid */}
-            <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={8}>
-              {services.map((service, idx) => (
+            <SimpleGrid columns={{ base: 1, lg: 3 }} spacing={10} mb={16}>
+              {serviceCategories.map((category, idx) => (
                 <MotionBox
                   key={idx}
+                  bg={cardBg}
+                  p={8}
+                  borderRadius="lg"
+                  boxShadow="md"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.1 }}
-                  p={6}
-                  borderRadius="lg"
-                  boxShadow="sm"
-                  bg={cardBg}
+                  transition={{ delay: idx * 0.2, duration: 0.5 }}
+                  overflow="hidden"
+                  position="relative"
                   borderTop="4px solid"
-                  borderColor={service.color}
-                  _hover={{
-                    transform: 'translateY(-5px)',
-                    boxShadow: 'md',
-                    transition: 'all 0.3s ease'
-                  }}
+                  borderColor={category.color}
+                  height="100%"
+                  display="flex"
+                  flexDirection="column"
                 >
-                  <Icon 
-                    as={service.icon} 
-                    fontSize="3xl" 
-                    color={service.color} 
-                    mb={4} 
-                  />
-                  <Heading as="h3" size="md" mb={3} color={textColor}>
-                    {service.title}
-                  </Heading>
-                  <Text color={subtextColor}>
-                    {service.description}
-                  </Text>
+                  <VStack spacing={6} align="flex-start" flex="1">
+                    <Icon 
+                      as={category.icon} 
+                      fontSize="4xl" 
+                      color={category.color} 
+                    />
+                    
+                    <Heading as="h2" size="lg" color={textColor}>
+                      {category.title}
+                    </Heading>
+                    
+                    <Text color={subtextColor} fontSize="md">
+                      {category.description}
+                    </Text>
+                    
+                    <List spacing={3} mt={4} width="100%">
+                      {category.features.map((feature, fidx) => (
+                        <ListItem key={fidx} display="flex" alignItems="flex-start">
+                          <ListIcon as={feature.icon} color={bulletColor} mt={1} />
+                          <Text color={subtextColor} fontSize="sm">
+                            {feature.text}
+                          </Text>
+                        </ListItem>
+                      ))}
+                    </List>
+                  </VStack>
+                  
+                  <Button 
+                    variant="outline" 
+                    colorScheme="brand"
+                    alignSelf="flex-start"
+                    mt={8}
+                    size="sm"
+                    opacity={0.8}
+                    _hover={{ opacity: 1 }}
+                  >
+                    {language === 'en' ? "Learn More" : "Află Mai Multe"}
+                  </Button>
                 </MotionBox>
               ))}
             </SimpleGrid>
+            
+            <Box bg={featureBg} p={10} borderRadius="xl" mb={12}>
+              <Heading 
+                as="h2" 
+                size="lg" 
+                mb={6} 
+                color={featureHeadingColor}
+                textAlign="center"
+              >
+                {language === 'en' ? "Why Choose Our Services" : "De Ce Să Alegi Serviciile Noastre"}
+              </Heading>
+              
+              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={8}>
+                {[
+                  {
+                    title: language === 'en' ? "Tailored Solutions" : "Soluții Personalizate",
+                    description: language === 'en' 
+                      ? "We design custom solutions that address your specific challenges."
+                      : "Proiectăm soluții personalizate care abordează provocările tale specifice."
+                  },
+                  {
+                    title: language === 'en' ? "Transparent Communication" : "Comunicare Transparentă",
+                    description: language === 'en'
+                      ? "Clear, honest communication throughout the entire project lifecycle."
+                      : "Comunicare clară și onestă pe tot parcursul ciclului de viață al proiectului."
+                  },
+                  {
+                    title: language === 'en' ? "Industry Expertise" : "Expertiză în Industrie",
+                    description: language === 'en'
+                      ? "Deep knowledge of technology trends and best practices."
+                      : "Cunoștințe profunde despre tendințele și cele mai bune practici din tehnologie."
+                  },
+                  {
+                    title: language === 'en' ? "Ongoing Support" : "Suport Continuu",
+                    description: language === 'en'
+                      ? "We're partners in your success, offering continued assistance after launch."
+                      : "Suntem parteneri în succesul tău, oferind asistență continuă după lansare."
+                  }
+                ].map((feature, idx) => (
+                  <MotionFlex
+                    key={idx}
+                    direction="column"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 * idx + 0.5, duration: 0.5 }}
+                  >
+                    <Heading as="h3" size="md" mb={3} color={textColor}>
+                      {feature.title}
+                    </Heading>
+                    <Text color={subtextColor}>
+                      {feature.description}
+                    </Text>
+                  </MotionFlex>
+                ))}
+              </SimpleGrid>
+            </Box>
+            
+            <Flex justify="center">
+              <Button 
+                colorScheme="brand" 
+                size="lg" 
+                px={8}
+                leftIcon={<FaChartLine />}
+              >
+                {language === 'en' ? "Schedule a Consultation" : "Programează o Consultație"}
+              </Button>
+            </Flex>
           </Box>
         )}
       </Container>
