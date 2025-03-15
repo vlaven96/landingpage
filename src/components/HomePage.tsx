@@ -7,12 +7,11 @@ import {
   Text,
   Button,
   Stack,
-  useColorModeValue,
-  Image
+  useColorModeValue
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { Language } from '../App';
-import webAppGif from '../assets/landingpage_animation.gif';
+import NeuralNetworkAnimation from './NeuralNetworkAnimation';
 
 const MotionBox = motion(Box);
 const MotionText = motion(Text);
@@ -92,19 +91,14 @@ const HomePage: React.FC<HomePageProps> = ({ language }) => {
             </MotionBox>
           </Box>
           
-          {/* Right Content - Animation */}
+          {/* Right Content - Neural Network Animation */}
           <MotionBox
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2, duration: 0.7 }}
             maxW={{ base: '100%', lg: '55%' }}
           >
-            <Image 
-              src={webAppGif} 
-              alt="Tech Animation" 
-              borderRadius="xl"
-              shadow="xl"
-            />
+            <NeuralNetworkAnimation height="400px" />
           </MotionBox>
         </Flex>
       </Container>
