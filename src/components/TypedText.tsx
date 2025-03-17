@@ -2,39 +2,35 @@ import React, { useEffect, useState } from 'react';
 import { Text } from '@chakra-ui/react';
 
 interface TypedTextProps {
-  text?: string;
+  text: string;
   speed?: number; // ms per character
+  hasVisited?: boolean; // New prop
 }
 
-const TypedText: React.FC<TypedTextProps> = ({ text = '', speed = 30 }) => {
-  const [typed, setTyped] = useState('');
+const TypedText: React.FC<TypedTextProps> = ({ text, speed = 25, hasVisited = false }) => {
+  const [displayedText, setDisplayedText] = useState(hasVisited ? text : '');
 
-  // Reset the typed text when text prop changes
   useEffect(() => {
-    setTyped('');
-  }, [text]);
+    // If we've visited before, immediately show the full text
+    if (hasVisited) {
+      setDisplayedText(text);
+      return;
+    }
 
-  // Handle the typing effect
-  useEffect(() => {
-    if (!text) return; // Early return if text is empty
-    
-    let index = 0;
-    const timer = setInterval(() => {
-      if (index < text.length) {
-        const char = text[index];
-        if (char !== undefined) { // Ensure we're not adding undefined
-          setTyped(prev => prev + char);
-        }
-        index++;
+    let currentIndex = 0;
+    const interval = setInterval(() => {
+      if (currentIndex <= text.length) {
+        setDisplayedText(text.slice(0, currentIndex));
+        currentIndex++;
       } else {
-        clearInterval(timer);
+        clearInterval(interval);
       }
     }, speed);
-    
-    return () => clearInterval(timer);
-  }, [text, speed]);
 
-  return <Text mt={2}>{typed}</Text>;
+    return () => clearInterval(interval);
+  }, [text, speed, hasVisited]);
+
+  return <Text mt={2}>{displayedText}</Text>;
 };
 
 export default TypedText;

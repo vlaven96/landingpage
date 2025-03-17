@@ -33,15 +33,22 @@ const MotionCircle = motion(Circle);
 
 interface OurProcessPageProps {
   language: Language;
+  hasVisited?: boolean;
 }
 
-const OurProcessPage: React.FC<OurProcessPageProps> = ({ language }) => {
-  const [loading, setLoading] = useState(true);
+const OurProcessPage: React.FC<OurProcessPageProps> = ({ language, hasVisited = false }) => {
+  const [loading, setLoading] = useState(!hasVisited);
 
   useEffect(() => {
+    // If we've visited before, skip the loading animation
+    if (hasVisited) {
+      setLoading(false);
+      return;
+    }
+    
     const timer = setTimeout(() => setLoading(false), 1500);
     return () => clearTimeout(timer);
-  }, []);
+  }, [hasVisited]);
 
   // Text content based on language
   const headingText = language === 'en' ? "Our Process" : "Procesul Nostru";

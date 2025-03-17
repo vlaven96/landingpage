@@ -1,0 +1,3 @@
+import 'dotenv/config';
+
+// Rest of your imports and code... 

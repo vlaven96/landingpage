@@ -21,15 +21,22 @@ const MotionFlex = motion(Flex);
 
 interface TeamPageProps {
   language: Language;
+  hasVisited?: boolean;
 }
 
-const TeamPage: React.FC<TeamPageProps> = ({ language }) => {
-  const [loading, setLoading] = useState(true);
+const TeamPage: React.FC<TeamPageProps> = ({ language, hasVisited = false }) => {
+  const [loading, setLoading] = useState(!hasVisited);
 
   useEffect(() => {
+    // If we've visited before, skip the loading animation
+    if (hasVisited) {
+      setLoading(false);
+      return;
+    }
+    
     const timer = setTimeout(() => setLoading(false), 1500);
     return () => clearTimeout(timer);
-  }, []);
+  }, [hasVisited]);
 
   // Text content based on language
   const headingText = language === 'en' ? "Our Team" : "Echipa Noastră";

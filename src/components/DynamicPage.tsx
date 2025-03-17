@@ -1,16 +1,30 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Container, Heading, Text, Divider, Skeleton, useColorModeValue } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { DynamicPageData } from '../App';
 
 interface DynamicPageProps {
-  data?: DynamicPageData;
+  page: DynamicPageData;
+  hasVisited?: boolean;
 }
 
 const MotionBox = motion(Box);
 
-const DynamicPage: React.FC<DynamicPageProps> = ({ data }) => {
-  if (!data) {
+const DynamicPage: React.FC<DynamicPageProps> = ({ page, hasVisited = false }) => {
+  const [loading, setLoading] = useState(!hasVisited);
+
+  useEffect(() => {
+    // If we've visited before, skip the loading animation
+    if (hasVisited) {
+      setLoading(false);
+      return;
+    }
+    
+    const timer = setTimeout(() => setLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, [hasVisited]);
+
+  if (!page) {
     return (
       <Box minH="100vh" bg="white">
         <Container maxW="container.md" pt={{ base: 20, md: 32 }} pb={{ base: 16, md: 24 }}>
@@ -40,7 +54,7 @@ const DynamicPage: React.FC<DynamicPageProps> = ({ data }) => {
             mb={6} 
             color="gray.800"
           >
-            {data.title}
+            {page.title}
           </Heading>
           
           <Divider my={6} borderColor="gray.200" />
@@ -51,7 +65,7 @@ const DynamicPage: React.FC<DynamicPageProps> = ({ data }) => {
             color="gray.700" 
             lineHeight="1.8"
           >
-            {data.content}
+            {page.content}
           </Box>
         </MotionBox>
       </Container>

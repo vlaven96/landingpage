@@ -44,15 +44,22 @@ const MotionFlex = motion(Flex);
 
 interface ServicesPageProps {
   language: Language;
+  hasVisited?: boolean;
 }
 
-const ServicesPage: React.FC<ServicesPageProps> = ({ language }) => {
-  const [loading, setLoading] = useState(true);
+const ServicesPage: React.FC<ServicesPageProps> = ({ language, hasVisited = false }) => {
+  const [loading, setLoading] = useState(!hasVisited);
 
   useEffect(() => {
+    // If we've visited before, skip the loading animation
+    if (hasVisited) {
+      setLoading(false);
+      return;
+    }
+    
     const timer = setTimeout(() => setLoading(false), 1500);
     return () => clearTimeout(timer);
-  }, []);
+  }, [hasVisited]);
 
   // Text content based on language
   const headingText = language === 'en' ? "Our Services" : "Serviciile Noastre";

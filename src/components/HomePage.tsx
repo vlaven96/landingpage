@@ -26,9 +26,15 @@ const MotionFlex = motion(Flex);
 
 interface HomePageProps {
   language: Language;
+  hasVisited?: boolean;
 }
 
-const HomePage: React.FC<HomePageProps> = ({ language }) => {
+const HomePage: React.FC<HomePageProps> = ({ language, hasVisited = false }) => {
+  // Update any loading states or animations based on hasVisited
+  // For example, if you have typed text or animations that should run only once:
+  
+  const animationDelay = hasVisited ? 0 : 0.5; // Skip delay on repeat visits
+  
   // Content
   const headingText = language === 'en'
     ? 'Empowering Small Businesses Through Smart Technology Solutions'
@@ -148,7 +154,7 @@ const HomePage: React.FC<HomePageProps> = ({ language }) => {
                 letterSpacing="wide"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.2, duration: 0.7 }}
+                transition={{ delay: animationDelay, duration: 0.7 }}
               >
                 {subText}
               </MotionText>
@@ -160,7 +166,7 @@ const HomePage: React.FC<HomePageProps> = ({ language }) => {
               mb={6}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.4, duration: 0.7 }}
+              transition={{ delay: animationDelay + 0.2, duration: 0.7 }}
             >
               {introText}
             </MotionText>
@@ -168,7 +174,7 @@ const HomePage: React.FC<HomePageProps> = ({ language }) => {
             <MotionBox
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.7 }}
+              transition={{ delay: animationDelay + 0.5, duration: 0.7 }}
               w={{ base: 'full', lg: 'auto' }}
             >
               <VStack spacing={4} align={{ base: 'center', lg: 'flex-start' }}>
@@ -193,7 +199,7 @@ const HomePage: React.FC<HomePageProps> = ({ language }) => {
           <MotionBox
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2, duration: 0.7 }}
+            transition={{ delay: animationDelay, duration: 0.7 }}
             maxW={{ base: '100%', lg: '55%' }}
           >
             <NeuralNetworkAnimation height="400px" />
@@ -247,7 +253,7 @@ const HomePage: React.FC<HomePageProps> = ({ language }) => {
                   direction="column"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 * idx + 0.5, duration: 0.5 }}
+                  transition={{ delay: animationDelay + 0.1 * idx + 0.5, duration: 0.5 }}
                   p={5}
                   borderRadius="lg"
                   bg={highlightBg}

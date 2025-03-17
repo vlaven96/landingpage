@@ -20,15 +20,22 @@ const MotionBox = motion(Box);
 
 interface AboutPageProps {
   language: Language;
+  hasVisited?: boolean;
 }
 
-const AboutPage: React.FC<AboutPageProps> = ({ language }) => {
-  const [loading, setLoading] = useState(true);
+const AboutPage: React.FC<AboutPageProps> = ({ language, hasVisited = false }) => {
+  const [loading, setLoading] = useState(!hasVisited);
 
   useEffect(() => {
+    // If we've visited before, skip the loading animation
+    if (hasVisited) {
+      setLoading(false);
+      return;
+    }
+    
     const timer = setTimeout(() => setLoading(false), 1500);
     return () => clearTimeout(timer);
-  }, []);
+  }, [hasVisited]);
 
   // Text content based on language
   const headingText = language === 'en' ? "About Us" : "Despre Noi";

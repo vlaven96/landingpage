@@ -17,6 +17,7 @@ import {
 import { motion } from 'framer-motion';
 import { PageName, PageIdentifier, DynamicPageData } from '../App';
 import { FaRobot, FaPaperPlane, FaUser } from 'react-icons/fa';
+import { askChatbot } from '../services/chatbotService';
 
 interface ChatProps {
   onUnlockOrCreatePage: (pageId: PageIdentifier, pageData?: DynamicPageData) => void;
@@ -59,39 +60,39 @@ const Chat: React.FC<ChatProps> = ({ onUnlockOrCreatePage }) => {
     }
   };
 
-  const handleSend = () => {
-    const userMsg = inputValue.trim();
-    if (!userMsg) return;
-
-    // Add user message
-    setMessages((prev) => [...prev, { type: 'user', text: userMsg }]);
-
-    const lower = userMsg.toLowerCase();
-
-    // 1) Check if user asked for a known page
-    const found = KNOWN_PAGES.find((p) => lower.includes(p));
-    if (found) {
-      const systemText = `Navigating to "${found}" page...`;
-      setMessages((prev) => [...prev, { type: 'system', text: systemText }]);
-      onUnlockOrCreatePage(found);
+  const handleSend = async () => {
+    if (inputValue.trim()) {
+      // Add user message to chat
+      const userMessage: Message = { text: inputValue, type: 'user' };
+      setMessages(prev => [...prev, userMessage]);
       setInputValue('');
-      return;
+      
+      try {
+        // Call the backend API
+        const response = await askChatbot(inputValue.trim());
+        
+        // Add bot response to chat
+        setMessages(prev => [...prev, { 
+          text: response.answer, 
+          type: 'system' 
+        }]);
+        
+        // Only navigate if page_name is explicitly provided
+        if (response.page_name) {
+          // If page_name exists, navigate to that page
+          onUnlockOrCreatePage(response.page_name);
+        }
+        // Otherwise, just keep the conversation in the chat
+        
+      } catch (error) {
+        // Handle error gracefully
+        setMessages(prev => [...prev, { 
+          text: "Sorry, I'm having trouble connecting right now. Please try again later.", 
+          type: 'system' 
+        }]);
+        console.error('Chat error:', error);
+      }
     }
-
-    // 2) Otherwise, create a dynamic page
-    const dynamicPageId = `custom-page-${Date.now()}`;
-    const systemText = `Creating a new custom page for your request...`;
-
-    setMessages((prev) => [...prev, { type: 'system', text: systemText }]);
-
-    const newPageData: DynamicPageData = {
-      id: dynamicPageId,
-      title: 'Custom Topic',
-      content: `User question: "${userMsg}"\n\n(This is a custom dynamic page. Use actual AI to fill more content here.)`
-    };
-
-    onUnlockOrCreatePage(dynamicPageId, newPageData);
-    setInputValue('');
   };
 
   return (

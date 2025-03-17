@@ -53,6 +53,7 @@ const MotionFlex = motion(Flex);
 
 interface ContactPageProps {
   language: Language;
+  hasVisited?: boolean;
 }
 
 // Normally this would be in a separate component
@@ -87,15 +88,21 @@ const CalendlyEmbed: React.FC = () => {
   );
 };
 
-const ContactPage: React.FC<ContactPageProps> = ({ language }) => {
-  const [loading, setLoading] = useState(true);
+const ContactPage: React.FC<ContactPageProps> = ({ language, hasVisited = false }) => {
+  const [loading, setLoading] = useState(!hasVisited);
   const [formSubmitted, setFormSubmitted] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
+    // If we've visited before, skip the loading animation
+    if (hasVisited) {
+      setLoading(false);
+      return;
+    }
+    
     const timer = setTimeout(() => setLoading(false), 1500);
     return () => clearTimeout(timer);
-  }, []);
+  }, [hasVisited]);
 
   // Text content based on language
   const headingText = language === 'en' ? "Let's Transform Your Business!" : "Să Transformăm Afacerea Ta!";

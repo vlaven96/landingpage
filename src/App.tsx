@@ -33,7 +33,7 @@ const theme = extendTheme({
   },
   config: {
     initialColorMode: 'light',
-    useSystemColorMode: true,
+    useSystemColorMode: false,
   },
   styles: {
     global: (props: any) => ({
@@ -83,6 +83,11 @@ const App: React.FC = () => {
   const [language, setLanguage] = useState<Language>('en');
 
   /**
+   * Track which pages have already been visited to skip animations
+   */
+  const [visitedPages, setVisitedPages] = useState<PageIdentifier[]>(['home']);
+
+  /**
    * Optional: auto-detect user language on mount
    * (If you want to detect "ro" from the browser, uncomment)
    */
@@ -119,8 +124,14 @@ const App: React.FC = () => {
     if (pageData) {
       setDynamicPages((prev) => [...prev, pageData]);
     }
+    
     // Unlock if not in the list
     setUnlockedPages((prev) => (prev.includes(pageId) ? prev : [...prev, pageId]));
+
+    // Track that this page has been visited
+    if (!visitedPages.includes(pageId)) {
+      setVisitedPages(prev => [...prev, pageId]);
+    }
 
     // Navigate to the new/unlocked page
     setCurrentPage(pageId);
@@ -131,6 +142,11 @@ const App: React.FC = () => {
    */
   const handleNavigate = (pageId: PageIdentifier) => {
     if (unlockedPages.includes(pageId)) {
+      // Track that this page has been visited
+      if (!visitedPages.includes(pageId)) {
+        setVisitedPages(prev => [...prev, pageId]);
+      }
+      
       setCurrentPage(pageId);
     }
   };
@@ -140,29 +156,32 @@ const App: React.FC = () => {
    * We'll pass "language" to each subpage so it can display the correct text
    */
   const renderPage = () => {
+    // Check if this page has been visited before
+    const hasVisited = visitedPages.includes(currentPage);
+    
     if (isDefaultPage(currentPage)) {
       switch (currentPage) {
         case 'home':
-          return <HomePage language={language} />;
+          return <HomePage language={language} hasVisited={hasVisited} />;
         case 'about':
-          return <AboutPage language={language} />;
+          return <AboutPage language={language} hasVisited={hasVisited} />;
         case 'services':
-          return <ServicesPage language={language} />;
+          return <ServicesPage language={language} hasVisited={hasVisited} />;
         case 'team':
-          return <TeamPage language={language} />;
+          return <TeamPage language={language} hasVisited={hasVisited} />;
         case 'contact':
-          return <ContactPage language={language} />;
+          return <ContactPage language={language} hasVisited={hasVisited} />;
         case 'process':
-          return <OurProcessPage language={language} />;
+          return <OurProcessPage language={language} hasVisited={hasVisited} />;
         default:
-          return <HomePage language={language} />;
+          return <HomePage language={language} hasVisited={hasVisited} />;
       }
     } else {
       // It's dynamic: find the data
       const dp = dynamicPages.find((d) => d.id === currentPage);
       if (!dp) return <Box color="white">Error: Page Not Found</Box>;
       // Show a custom dynamic page with same style
-      return <DynamicPage page={dp} />;
+      return <DynamicPage page={dp} hasVisited={hasVisited} />;
     }
   };
 
