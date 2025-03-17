@@ -48,9 +48,11 @@ const Chat: React.FC<ChatProps> = ({ onUnlockOrCreatePage }) => {
   const textColor = useColorModeValue('gray.800', 'gray.100');
   const subtextColor = useColorModeValue('gray.600', 'gray.400');
   
-  // Scroll to bottom when messages change
+  // Scroll to bottom when messages change, but only if there are messages
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messages.length > 0) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
   }, [messages]);
   
   const handleKeyPress = (e: React.KeyboardEvent) => {
