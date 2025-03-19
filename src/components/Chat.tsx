@@ -6,7 +6,6 @@ import {
   Text,
   IconButton,
   useColorModeValue,
-  Container,
   VStack,
   Icon,
   Avatar,
@@ -14,9 +13,9 @@ import {
   InputGroup,
   InputRightElement
 } from '@chakra-ui/react';
-import { motion } from 'framer-motion';
-import { PageName, PageIdentifier, DynamicPageData } from '../App';
-import { FaRobot, FaPaperPlane, FaUser } from 'react-icons/fa';
+import { DefaultPageName, PageIdentifier, DynamicPageData } from '../App';
+import { FaRobot } from 'react-icons/fa';
+import { IoSend } from 'react-icons/io5';
 import { askChatbot } from '../services/chatbotService';
 
 interface ChatProps {
@@ -29,31 +28,37 @@ type Message = {
 };
 
 // Our known pages
-const KNOWN_PAGES: PageName[] = ['home', 'about', 'services', 'team', 'contact', 'process'];
-
-const MotionBox = motion(Box);
-const MotionFlex = motion(Flex);
+// TypeScript fix for complex union type
+type KnownPage = 'home' | 'about' | 'services' | 'team' | 'contact' | 'process';
+const KNOWN_PAGES: KnownPage[] = ['home', 'about', 'services', 'team', 'contact', 'process'];
 
 const Chat: React.FC<ChatProps> = ({ onUnlockOrCreatePage }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   
-  // Colors
-  const bgColor = useColorModeValue('gray.50', 'darkBg.900');
-  const userMsgBg = useColorModeValue('blue.50', 'blue.900');
-  const botMsgBg = useColorModeValue('white', 'darkBg.800');
-  const borderColor = useColorModeValue('gray.200', 'gray.700');
-  const inputBg = useColorModeValue('white', 'darkBg.800');
-  const textColor = useColorModeValue('gray.800', 'gray.100');
-  const subtextColor = useColorModeValue('gray.600', 'gray.400');
+  // Constants
+  const INPUT_AREA_HEIGHT = "56px";
+  
+  // Colors - Using Material Design palette
+  const bgColor = useColorModeValue('#FAFAFA', '#121212');
+  const userMsgBg = useColorModeValue('#E3F2FD', '#263238');
+  const botMsgBg = useColorModeValue('#FFFFFF', '#1E1E1E');
+  const borderColor = useColorModeValue('#EEEEEE', '#333333');
+  const inputBg = useColorModeValue('#FFFFFF', '#1E1E1E');
+  const textColor = useColorModeValue('#212121', '#EEEEEE');
+  const subtextColor = useColorModeValue('#757575', '#AAAAAA');
+  const chatboxBg = useColorModeValue('#FFFFFF', '#1E1E1E');
+  const primaryColor = useColorModeValue('#2196F3', '#90CAF9');
   
   // Scroll to bottom when messages change, but only if there are messages
   useEffect(() => {
-    if (messages.length > 0) {
+    if (messages.length > 0 && isFocused) {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [messages]);
+  }, [messages, isFocused]);
   
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -97,123 +102,153 @@ const Chat: React.FC<ChatProps> = ({ onUnlockOrCreatePage }) => {
     }
   };
 
+  const handleInputFocus = () => {
+    setIsFocused(true);
+  };
+
+  const handleInputBlur = () => {
+    setIsFocused(false);
+  };
+
+  // Function to focus input programmatically
+  const focusInput = () => {
+    inputRef.current?.focus();
+  };
+  
   return (
     <Box 
-      w="100%" 
-      minH="100vh"
-      bg={bgColor}
+      position="fixed"
+      bottom={0}
+      left={0}
+      right={0}
+      zIndex={100}
+      height={isFocused ? `calc(30vh)` : INPUT_AREA_HEIGHT}
+      bg={chatboxBg}
+      borderTop="1px solid"
+      borderColor={borderColor}
+      boxShadow="sm" 
+      overflow="hidden"
       display="flex"
       flexDirection="column"
+      width="100%"
+      onClick={focusInput}
     >
-      {/* Header area - welcome message & instructions */}
-      {messages.length === 0 && (
-        <MotionBox
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          pt={{ base: 20, md: 32 }}
-          pb={8}
-          textAlign="center"
+      {/* Chat messages area - only visible when focused */}
+      {isFocused && (
+        <Box
+          flex="1"
+          display="flex"
+          flexDirection="column"
+          overflow="hidden"
+          p={2}
         >
-          <Container maxW="container.md">
-            <Icon as={FaRobot} fontSize="5xl" color="brand.500" mb={6} />
-            <Text fontSize="2xl" fontWeight="bold" mb={4} color={textColor}>
-              Welcome to TechSolutions AI Assistant
-            </Text>
-            <Text fontSize="lg" color={subtextColor} mb={8}>
-              Ask me to navigate to different pages or create custom content for you.
-              Try asking about "Home", "About", "Services", "Team", or "Contact".
-            </Text>
-          </Container>
-        </MotionBox>
+          {/* Welcome message when no messages */}
+          {messages.length === 0 && (
+            <Box
+              p={4}
+              textAlign="center"
+              my="auto"
+            >
+              <Icon as={FaRobot} fontSize="xl" color={primaryColor} mb={2} />
+              <Text fontSize="sm" fontWeight="medium" mb={1} color={textColor}>
+                How can I help you today?
+              </Text>
+              <Text fontSize="xs" color={subtextColor}>
+                Ask me to navigate to different pages or create custom content for you.
+              </Text>
+            </Box>
+          )}
+          
+          {/* Chat messages area */}
+          <VStack 
+            spacing={2}
+            flex="1"
+            overflowY="auto"
+            p={0}
+            mb={2}
+            width="100%"
+            maxW="container.xl"
+            mx="auto"
+            align="stretch"
+          >
+            {messages.map((msg, idx) => (
+              <Box 
+                key={idx}
+                maxW="80%"
+                py={2}
+                px={3}
+                my={0.5}
+                bg={msg.type === 'user' ? userMsgBg : botMsgBg}
+                borderRadius="lg"
+                alignSelf={msg.type === 'user' ? 'flex-end' : 'flex-start'}
+                boxShadow="sm"
+              >
+                <HStack spacing={2} align="center" mb={1}>
+                  {msg.type !== 'user' && (
+                    <Avatar size="2xs" bg={primaryColor} icon={<FaRobot fontSize="0.6rem" />} />
+                  )}
+                  <Text fontWeight="medium" fontSize="xs" color={textColor}>
+                    {msg.type === 'user' ? 'You' : 'Assistant'}
+                  </Text>
+                </HStack>
+                <Text fontSize="sm" color={textColor}>
+                  {msg.text}
+                </Text>
+              </Box>
+            ))}
+            <div ref={messagesEndRef} />
+          </VStack>
+        </Box>
       )}
       
-      {/* Chat messages area */}
-      <VStack 
-        spacing={0}
-        w="100%"
-        flex="1"
-        overflowY="auto"
-        pt={messages.length > 0 ? 24 : 0}
-        px={0}
-      >
-        {messages.map((msg, idx) => (
-          <Box 
-            key={idx}
-            w="100%"
-            py={4}
-            bg={msg.type === 'user' ? userMsgBg : botMsgBg}
-            borderBottom="1px solid"
-            borderColor={borderColor}
-          >
-            <Container maxW="container.lg">
-              <Flex align="flex-start">
-                <Box mr={4} mt={1}>
-                  {msg.type === 'user' ? (
-                    <Avatar size="sm" bg="brand.600" icon={<FaUser fontSize="0.8rem" />} />
-                  ) : (
-                    <Avatar size="sm" bg="brand.500" icon={<FaRobot fontSize="0.8rem" />} />
-                  )}
-                </Box>
-                <Box flex="1">
-                  <Text fontWeight="bold" fontSize="sm" mb={1} color={textColor}>
-                    {msg.type === 'user' ? 'You' : 'AI Assistant'}
-                  </Text>
-                  <Text color={msg.type === 'user' ? 'white' : textColor}>
-                    {msg.text}
-                  </Text>
-                </Box>
-              </Flex>
-            </Container>
-          </Box>
-        ))}
-        <div ref={messagesEndRef} />
-      </VStack>
-      
-      {/* Input area - fixed at bottom */}
+      {/* Input area - always visible with consistent height */}
       <Box 
-        position="fixed"
-        bottom={0}
-        left={0}
-        right={0}
-        borderTop="1px solid"
-        borderColor={borderColor}
-        bg={bgColor}
         px={4}
-        py={6}
-        zIndex={10}
+        py={2}
+        borderTop={isFocused ? "1px solid" : "none"}
+        borderColor={borderColor}
+        bg={chatboxBg}
+        height={INPUT_AREA_HEIGHT}
+        minHeight={INPUT_AREA_HEIGHT}
+        display="flex"
+        alignItems="center"
       >
-        <Container maxW="container.md">
-          <InputGroup size="lg">
-            <Input
-              placeholder="Type your message here..."
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyPress={handleKeyPress}
-              borderWidth="1px"
-              borderColor={borderColor}
-              bg={inputBg}
-              color={textColor}
-              _hover={{ borderColor: 'brand.400' }}
-              _focus={{ borderColor: 'brand.500', boxShadow: 'outline' }}
-              pr="4.5rem"
-              borderRadius="lg"
-              height="56px"
+        <InputGroup size="md" maxW="container.xl" mx="auto">
+          <Input
+            ref={inputRef}
+            placeholder="Ask a question..."
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyPress={handleKeyPress}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
+            borderWidth="1px"
+            borderColor={borderColor}
+            bg={inputBg}
+            color={textColor}
+            _hover={{ borderColor: primaryColor }}
+            _focus={{ borderColor: primaryColor, boxShadow: 'none' }}
+            pr="2.5rem"
+            borderRadius="full"
+            size="md"
+            fontSize="sm"
+          />
+          <InputRightElement width="2.5rem">
+            <IconButton
+              h="1.75rem"
+              w="1.75rem"
+              size="sm"
+              aria-label="Send message"
+              icon={<IoSend size="0.9rem" />}
+              color={inputValue.trim() ? "white" : "gray.400"}
+              bg={inputValue.trim() ? primaryColor : "transparent"}
+              _hover={{ bg: inputValue.trim() ? `${primaryColor}` : "transparent" }}
+              isDisabled={!inputValue.trim()}
+              borderRadius="full"
+              onMouseDown={(e) => e.preventDefault()}
             />
-            <InputRightElement width="4.5rem" h="full">
-              <IconButton
-                h="1.75rem"
-                size="lg"
-                aria-label="Send message"
-                icon={<FaPaperPlane />}
-                colorScheme="brand"
-                onClick={handleSend}
-                isDisabled={!inputValue.trim()}
-                borderRadius="md"
-                mt={1}
-              />
-            </InputRightElement>
-          </InputGroup>
-        </Container>
+          </InputRightElement>
+        </InputGroup>
       </Box>
     </Box>
   );
