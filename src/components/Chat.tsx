@@ -23,6 +23,8 @@ import { askChatbot } from '../services/chatbotService';
 interface ChatProps {
   onUnlockOrCreatePage: (pageId: PageIdentifier, pageData?: DynamicPageData, newLanguage?: Language) => void;
   currentPage: PageIdentifier;
+  systemMessage?: string | null;
+  onSystemMessageDisplayed?: () => void;
 }
 
 type Message = {
@@ -32,7 +34,12 @@ type Message = {
 
 const MotionBox = motion(Box);
 
-const Chat: React.FC<ChatProps> = ({ onUnlockOrCreatePage, currentPage }) => {
+const Chat: React.FC<ChatProps> = ({ 
+  onUnlockOrCreatePage, 
+  currentPage,
+  systemMessage,
+  onSystemMessageDisplayed
+}) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isFocused, setIsFocused] = useState(false);
@@ -53,6 +60,25 @@ const Chat: React.FC<ChatProps> = ({ onUnlockOrCreatePage, currentPage }) => {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages]);
+  
+  // Handle system message effect
+  useEffect(() => {
+    if (systemMessage) {
+      // Add the message to chat
+      setMessages(prev => [...prev, { 
+        text: systemMessage, 
+        type: 'system' 
+      }]);
+      
+      // Set chat to focused state to make it visible
+      setIsFocused(true);
+      
+      // Notify parent component that message was displayed
+      if (onSystemMessageDisplayed) {
+        onSystemMessageDisplayed();
+      }
+    }
+  }, [systemMessage, onSystemMessageDisplayed]);
   
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {

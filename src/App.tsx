@@ -88,6 +88,11 @@ const App: React.FC = () => {
   const [visitedPages, setVisitedPages] = useState<PageIdentifier[]>(['home']);
 
   /**
+   * Add a state for message to be displayed in chat
+   */
+  const [chatSystemMessage, setChatSystemMessage] = useState<string | null>(null);
+
+  /**
    * Optional: auto-detect user language on mount
    * (If you want to detect "ro" from the browser, uncomment)
    */
@@ -157,6 +162,44 @@ const App: React.FC = () => {
   };
 
   /**
+   * Create a function to handle specific page requests with chat messages
+   */
+  const handlePageRequest = (targetPage: PageIdentifier) => {
+    // Set message based on current page and language
+    let message;
+    
+    if (targetPage === 'services') {
+      message = language === 'en'
+        ? "We're directing you to our Services page."
+        : "Vă redirecționăm către pagina de servicii.";
+    } else if (targetPage === 'contact') {
+      message = language === 'en'
+        ? "We're directing you to our Contact page."
+        : "Vă redirecționăm către pagina de contact.";
+    } else {
+      message = language === 'en'
+        ? `We're directing you to the ${targetPage} page.`
+        : `Vă redirecționăm către pagina ${targetPage}.`;
+    }
+    
+    // Set the message to be displayed in chat
+    setChatSystemMessage(message);
+    
+    // Navigate to the page after a small delay
+    setTimeout(() => {
+      // Use unlockOrCreatePage to ensure the page is unlocked
+      unlockOrCreatePage(targetPage);
+    }, 500);
+  };
+
+  /**
+   * Function specifically for handling consultation requests
+   */
+  const handleConsultationRequest = () => {
+    handlePageRequest('contact');
+  };
+
+  /**
    * Renders the current page (home, about, or a dynamic one)
    * We'll pass "language" to each subpage so it can display the correct text
    */
@@ -167,11 +210,21 @@ const App: React.FC = () => {
     if (isDefaultPage(currentPage)) {
       switch (currentPage) {
         case 'home':
-          return <HomePage language={language} hasVisited={hasVisited} />;
+          return <HomePage 
+            language={language} 
+            hasVisited={hasVisited} 
+            onNavigate={handleNavigate}
+            onConsultation={handleConsultationRequest}
+            onPageRequest={handlePageRequest}
+          />;
         case 'about':
           return <AboutPage language={language} hasVisited={hasVisited} />;
         case 'services':
-          return <ServicesPage language={language} hasVisited={hasVisited} />;
+          return <ServicesPage 
+            language={language} 
+            hasVisited={hasVisited} 
+            onConsultation={handleConsultationRequest}
+          />;
         case 'team':
           return <TeamPage language={language} hasVisited={hasVisited} />;
         case 'contact':
@@ -209,6 +262,8 @@ const App: React.FC = () => {
         <Chat 
           onUnlockOrCreatePage={unlockOrCreatePage} 
           currentPage={currentPage}
+          systemMessage={chatSystemMessage}
+          onSystemMessageDisplayed={() => setChatSystemMessage(null)}
         />
       </Box>
     </ChakraProvider>

@@ -27,13 +27,28 @@ const MotionFlex = motion(Flex);
 interface HomePageProps {
   language: Language;
   hasVisited?: boolean;
+  onNavigate?: (pageId: PageIdentifier) => void;
+  onConsultation?: () => void;
+  onPageRequest?: (pageId: PageIdentifier) => void;
 }
 
-const HomePage: React.FC<HomePageProps> = ({ language, hasVisited = false }) => {
+const HomePage: React.FC<HomePageProps> = ({ language, hasVisited = false, onNavigate, onConsultation, onPageRequest }) => {
   // Update any loading states or animations based on hasVisited
   // For example, if you have typed text or animations that should run only once:
   
   const animationDelay = hasVisited ? 0 : 0.5; // Skip delay on repeat visits
+  
+  // Color mode values
+  const bg = useColorModeValue('white', 'darkBg.700');
+  const cardBg = useColorModeValue('white', 'darkBg.800');
+  const textColor = useColorModeValue('gray.800', 'gray.100');
+  const subtextColor = useColorModeValue('gray.600', 'gray.300');
+  const highlightColor = useColorModeValue('brand.500', 'brand.300');
+  const badgeBg = useColorModeValue('brand.50', 'whiteAlpha.200');
+  const accentColor = useColorModeValue('brand.500', 'brand.300');
+  const highlightBg = useColorModeValue('brand.50', 'darkBg.700');
+  const sectionBg = useColorModeValue('white', 'gray.900');
+  const messageBgColor = useColorModeValue('gray.100', 'gray.700'); // Add this for chat message
   
   // Content
   const headingText = language === 'en'
@@ -56,17 +71,6 @@ const HomePage: React.FC<HomePageProps> = ({ language, hasVisited = false }) => 
     ? 'Book a Free Consultation'
     : 'Programează o Consultație Gratuită';
 
-  // Color mode values
-  const bg = useColorModeValue('white', 'darkBg.700');
-  const cardBg = useColorModeValue('white', 'darkBg.800');
-  const textColor = useColorModeValue('gray.800', 'gray.100');
-  const subtextColor = useColorModeValue('gray.600', 'gray.300');
-  const highlightColor = useColorModeValue('brand.500', 'brand.300');
-  const badgeBg = useColorModeValue('brand.50', 'whiteAlpha.200');
-  const accentColor = useColorModeValue('brand.500', 'brand.300');
-  const highlightBg = useColorModeValue('brand.50', 'darkBg.700');
-  const sectionBg = useColorModeValue('white', 'gray.900');
-  
   // Why Choose Us section content
   const whyChooseUsTitle = language === 'en' 
     ? "Why Choose Our Services" 
@@ -98,6 +102,26 @@ const HomePage: React.FC<HomePageProps> = ({ language, hasVisited = false }) => 
         : "Suntem parteneri în succesul tău, oferind asistență continuă după lansare."
     }
   ];
+  
+  // Function to handle consultation button click
+  const handleConsultation = () => {
+    if (onConsultation) {
+      onConsultation();
+    } else if (onNavigate) {
+      // Fallback to direct navigation if onConsultation not provided
+      onNavigate('contact');
+    }
+  };
+  
+  // Function to handle services button click
+  const handleServicesClick = () => {
+    if (onPageRequest) {
+      onPageRequest('services');
+    } else if (onNavigate) {
+      // Fallback to direct navigation
+      onNavigate('services');
+    }
+  };
   
   return (
     <Box minH="100vh" bg={bg} overflowX="hidden">
@@ -188,6 +212,7 @@ const HomePage: React.FC<HomePageProps> = ({ language, hasVisited = false }) => 
                   px={8}
                   boxShadow="md"
                   _hover={{ transform: 'translateY(-2px)', boxShadow: 'lg' }}
+                  onClick={handleConsultation}
                 >
                   {buttonText}
                 </Button>
@@ -284,7 +309,7 @@ const HomePage: React.FC<HomePageProps> = ({ language, hasVisited = false }) => 
                 px={8}
                 _hover={{ transform: 'translateY(-2px)', boxShadow: 'lg' }}
                 transition="all 0.2s"
-                onClick={() => window.location.href = '/services'}
+                onClick={handleServicesClick}
                 rightIcon={<FaArrowRight />}
               >
                 {language === 'en' ? "Explore Our Services" : "Explorează Serviciile Noastre"}

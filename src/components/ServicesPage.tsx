@@ -34,7 +34,8 @@ import {
   FaLaptopCode,
   FaClipboardList,
   FaStream,
-  FaSearch
+  FaSearch,
+  FaArrowRight
 } from 'react-icons/fa';
 import TypedText from './TypedText';
 import { Language } from '../App';
@@ -45,9 +46,10 @@ const MotionFlex = motion(Flex);
 interface ServicesPageProps {
   language: Language;
   hasVisited?: boolean;
+  onConsultation?: () => void;
 }
 
-const ServicesPage: React.FC<ServicesPageProps> = ({ language, hasVisited = false }) => {
+const ServicesPage: React.FC<ServicesPageProps> = ({ language, hasVisited = false, onConsultation }) => {
   const [loading, setLoading] = useState(!hasVisited);
 
   useEffect(() => {
@@ -137,6 +139,16 @@ const ServicesPage: React.FC<ServicesPageProps> = ({ language, hasVisited = fals
           ]
     }
   ];
+
+  // Function to handle consultation button click
+  const handleConsultation = () => {
+    if (onConsultation) {
+      onConsultation();
+    } else {
+      // Fallback to direct navigation
+      window.location.href = '/contact';
+    }
+  };
 
   return (
     <Box minH="100vh" bg={bg}>
@@ -311,12 +323,12 @@ const ServicesPage: React.FC<ServicesPageProps> = ({ language, hasVisited = fals
             
             <Flex justify="center">
               <Button 
-                colorScheme="brand" 
                 size="lg" 
-                px={8}
-                leftIcon={<FaChartLine />}
+                colorScheme="brand" 
+                onClick={handleConsultation}
+                rightIcon={<FaArrowRight />}
               >
-                {language === 'en' ? "Schedule a Consultation" : "Programează o Consultație"}
+                {language === 'en' ? 'Schedule a Consultation' : 'Programează o Consultație'}
               </Button>
             </Flex>
           </Box>
