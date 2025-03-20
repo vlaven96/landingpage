@@ -80,6 +80,29 @@ const Chat: React.FC<ChatProps> = ({
     }
   }, [systemMessage, onSystemMessageDisplayed]);
   
+  // Add a useEffect to handle document-wide click events
+  useEffect(() => {
+    // Function to handle clicks outside the chat
+    const handleClickOutside = (event: MouseEvent) => {
+      const chatContainer = document.getElementById('chat-container');
+      
+      // If the chat is expanded and the click is outside the chat
+      if (isFocused && chatContainer && !chatContainer.contains(event.target as Node)) {
+        setIsFocused(false);
+      }
+    };
+    
+    // Add event listener when chat is focused
+    if (isFocused) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    
+    // Clean up the event listener
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isFocused]);
+  
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
