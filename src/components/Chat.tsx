@@ -21,7 +21,8 @@ import { BsArrowRight } from 'react-icons/bs';
 import { askChatbot } from '../services/chatbotService';
 
 interface ChatProps {
-  onUnlockOrCreatePage: (pageId: PageIdentifier, pageData?: DynamicPageData) => void;
+  onUnlockOrCreatePage: (pageId: PageIdentifier, pageData?: DynamicPageData, newLanguage?: Language) => void;
+  currentPage: PageIdentifier;
 }
 
 type Message = {
@@ -31,7 +32,7 @@ type Message = {
 
 const MotionBox = motion(Box);
 
-const Chat: React.FC<ChatProps> = ({ onUnlockOrCreatePage }) => {
+const Chat: React.FC<ChatProps> = ({ onUnlockOrCreatePage, currentPage }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isFocused, setIsFocused] = useState(false);
@@ -104,6 +105,11 @@ const Chat: React.FC<ChatProps> = ({ onUnlockOrCreatePage }) => {
             type: 'system' 
           }]);
           
+          // Handle language change if provided by server
+          if (response.lang && (response.lang === 'en' || response.lang === 'ro')) {
+            onUnlockOrCreatePage(response.page_name, undefined, response.lang);
+          }
+          
           // Only navigate if page_name is explicitly provided
           if (response.page_name) {
             // If page_name exists, navigate to that page
@@ -123,7 +129,7 @@ const Chat: React.FC<ChatProps> = ({ onUnlockOrCreatePage }) => {
           }]);
           console.error('Chat error:', error);
         }
-      }, 10);
+      }, 100);
     }
   };
 

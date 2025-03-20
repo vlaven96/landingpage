@@ -119,7 +119,12 @@ const App: React.FC = () => {
   /**
    * Called by the Chat whenever we need to unlock or create a page
    */
-  const unlockOrCreatePage = (pageId: PageIdentifier, pageData?: DynamicPageData) => {
+  const unlockOrCreatePage = (pageId: PageIdentifier, pageData?: DynamicPageData, newLanguage?: Language) => {
+    // If language change is requested, update it
+    if (newLanguage && (newLanguage === 'en' || newLanguage === 'ro')) {
+      setLanguage(newLanguage);
+    }
+
     // If this is a new dynamic page, store it
     if (pageData) {
       setDynamicPages((prev) => [...prev, pageData]);
@@ -196,10 +201,15 @@ const App: React.FC = () => {
           language={language}
           onToggleLanguage={toggleLanguage}
         />
-        {renderPage()}
+        <Box pb={{ base: "30vh", md: "30vh" }}>
+          {renderPage()}
+        </Box>
 
         {/* The Chat can unlock existing pages or create new ones */}
-        <Chat onUnlockOrCreatePage={unlockOrCreatePage} />
+        <Chat 
+          onUnlockOrCreatePage={unlockOrCreatePage} 
+          currentPage={currentPage}
+        />
       </Box>
     </ChakraProvider>
   );
