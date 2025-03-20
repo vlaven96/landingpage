@@ -196,20 +196,6 @@ const NeuralNetworkAnimation: React.FC<NeuralNetworkAnimationProps> = ({
         </pattern>
         <rect width="100%" height="100%" fill="url(#grid)" />
         
-        {/* Background matrix-like elements */}
-        {Array.from({length: 20}).map((_, i) => (
-          <text 
-            key={`binary-${i}`}
-            x={Math.random() * 750}
-            y={Math.random() * 550}
-            fill={primaryColorFaded}
-            fontSize={Math.random() * 8 + 8}
-            opacity={0.2}
-          >
-            {Math.random() > 0.5 ? '1' : '0'}
-          </text>
-        ))}
-        
         {/* Neural network connections - all layers */}
         {layerPositions.map((layer, layerIndex) => {
           if (layerIndex === layerPositions.length - 1) return null; // Skip last layer (no outgoing connections)
@@ -342,61 +328,10 @@ const NeuralNetworkAnimation: React.FC<NeuralNetworkAnimationProps> = ({
                     delay: nodeIndex * 0.2
                   }}
                 />
-                
-                {/* Labels for input/output nodes */}
-                {(layerIndex === 0 || layerIndex === layerPositions.length - 1) && (
-                  <text 
-                    x={node.x} 
-                    y={node.y + 4} 
-                    textAnchor="middle" 
-                    fontSize={10} 
-                    fill={colors[layerIndex]}
-                    fontWeight={isActive ? "bold" : "normal"}
-                  >
-                    {layerIndex === 0 ? `x${nodeIndex}` : 'y'}
-                  </text>
-                )}
               </motion.g>
             );
           });
         })}
-        
-        {/* Mathematical annotations for complexity */}
-        <motion.text
-          x={400}
-          y={50}
-          textAnchor="middle"
-          fontSize={12}
-          fill={primaryColor}
-          opacity={0.7}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: isHovered ? 0.9 : 0.5 }}
-          transition={{ duration: 1 }}
-        >
-          Neural Network: f(x) = σ(Wx + b)
-        </motion.text>
-        
-        <motion.text
-          x={325}
-          y={580}
-          textAnchor="middle"
-          fontSize={10}
-          fill={secondaryColor}
-          opacity={0.6}
-        >
-          Activation: ReLU(x) = max(0, x)
-        </motion.text>
-        
-        <motion.text
-          x={575}
-          y={580}
-          textAnchor="middle"
-          fontSize={10}
-          fill={tertiaryColor}
-          opacity={0.6}
-        >
-          Output: Softmax(z)
-        </motion.text>
       </svg>
     </MotionBox>
   );
