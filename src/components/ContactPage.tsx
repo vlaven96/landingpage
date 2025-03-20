@@ -30,7 +30,9 @@ import {
   ModalBody,
   ModalCloseButton,
   Select,
-  SkeletonText
+  SkeletonText,
+  Alert,
+  AlertIcon
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { 
@@ -47,6 +49,7 @@ import {
 } from 'react-icons/fa';
 import TypedText from './TypedText';
 import { Language } from '../App';
+import { submitContactForm, ContactFormData } from '../services/contactService';
 
 const MotionBox = motion(Box);
 const MotionFlex = motion(Flex);
@@ -92,6 +95,14 @@ const ContactPage: React.FC<ContactPageProps> = ({ language, hasVisited = false 
   const [loading, setLoading] = useState(!hasVisited);
   const [formSubmitted, setFormSubmitted] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [formData, setFormData] = useState<ContactFormData>({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     // If we've visited before, skip the loading animation
@@ -160,12 +171,50 @@ const ContactPage: React.FC<ContactPageProps> = ({ language, hasVisited = false 
   const borderColor = useColorModeValue('gray.200', 'darkBg.600');
   const inputBg = useColorModeValue('white', 'darkBg.700');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Form field change handler
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate form submission
-    setTimeout(() => {
-      setFormSubmitted(true);
-    }, 1000);
+    
+    // Basic validation
+    if (!formData.name || !formData.email || !formData.subject || !formData.message) {
+      setErrorMessage(language === 'en' 
+        ? 'Please fill in all required fields' 
+        : 'Vă rugăm să completați toate câmpurile obligatorii');
+      return;
+    }
+    
+    setIsSubmitting(true);
+    setErrorMessage(null);
+    
+    try {
+      const response = await submitContactForm(formData);
+      
+      console.log('Form submission response:', response);
+      
+      if (response.success) {
+        // Success! Show the thank you message
+        setFormSubmitted(true);
+      } else {
+        // API returned an error
+        setErrorMessage(response.message);
+      }
+    } catch (error) {
+      console.error('Form submission error:', error);
+      // Exception occurred
+      setErrorMessage(language === 'en' 
+        ? 'An error occurred. Please try again later.' 
+        : 'A apărut o eroare. Vă rugăm să încercați din nou mai târziu.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -383,10 +432,20 @@ const ContactPage: React.FC<ContactPageProps> = ({ language, hasVisited = false 
                 ) : (
                   <form onSubmit={handleSubmit}>
                     <VStack spacing={4}>
+                      {errorMessage && (
+                        <Alert status="error" borderRadius="md">
+                          <AlertIcon />
+                          {errorMessage}
+                        </Alert>
+                      )}
+                      
                       <FormControl isRequired>
                         <FormLabel color={textColor}>{nameLabel}</FormLabel>
                         <Input 
                           type="text" 
+                          name="name"
+                          value={formData.name}
+                          onChange={handleChange}
                           placeholder={`${nameLabel}...`}
                           bg={inputBg}
                           borderColor={borderColor}
@@ -399,6 +458,9 @@ const ContactPage: React.FC<ContactPageProps> = ({ language, hasVisited = false 
                         <FormLabel color={textColor}>{emailLabel}</FormLabel>
                         <Input 
                           type="email" 
+                          name="email"
+                          value={formData.email}
+                          onChange={handleChange}
                           placeholder={`${emailLabel}...`}
                           bg={inputBg}
                           borderColor={borderColor}
@@ -410,6 +472,9 @@ const ContactPage: React.FC<ContactPageProps> = ({ language, hasVisited = false 
                       <FormControl isRequired>
                         <FormLabel color={textColor}>{subjectLabel}</FormLabel>
                         <Select 
+                          name="subject"
+                          value={formData.subject}
+                          onChange={handleChange}
                           placeholder={language === 'en' ? "Select an option" : "Selectează o opțiune"}
                           bg={inputBg}
                           borderColor={borderColor}
@@ -426,6 +491,9 @@ const ContactPage: React.FC<ContactPageProps> = ({ language, hasVisited = false 
                       <FormControl isRequired>
                         <FormLabel color={textColor}>{messageLabel}</FormLabel>
                         <Textarea 
+                          name="message"
+                          value={formData.message}
+                          onChange={handleChange}
                           placeholder={`${messageLabel}...`}
                           rows={5}
                           bg={inputBg}
@@ -441,6 +509,8 @@ const ContactPage: React.FC<ContactPageProps> = ({ language, hasVisited = false 
                         width="100%"
                         type="submit"
                         mt={4}
+                        isLoading={isSubmitting}
+                        loadingText={language === 'en' ? 'Sending...' : 'Se trimite...'}
                       >
                         {submitButtonText}
                       </Button>
