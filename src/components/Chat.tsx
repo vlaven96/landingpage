@@ -107,7 +107,9 @@ const Chat: React.FC<ChatProps> = ({ onUnlockOrCreatePage, currentPage }) => {
           
           // Handle language change if provided by server
           if (response.lang && (response.lang === 'en' || response.lang === 'ro')) {
-            onUnlockOrCreatePage(response.page_name, undefined, response.lang);
+            // If no page_name is provided, stay on current page but update language
+            const pageToUse = response.page_name || currentPage;
+            onUnlockOrCreatePage(pageToUse, undefined, response.lang);
           }
           
           // Only navigate if page_name is explicitly provided
