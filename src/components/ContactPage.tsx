@@ -124,7 +124,7 @@ const ContactPage: React.FC<ContactPageProps> = ({ language, hasVisited = false 
   
   const contactInfo = {
     phone: "+40 123 456 789",
-    email: "contact@techsolutions.com",
+    email: "contact@DeceneuLabs.com",
     location: language === 'en' ? "Bucharest, Romania (Serving clients worldwide)" : "București, România (Deservim clienți din întreaga lume)"
   };
   

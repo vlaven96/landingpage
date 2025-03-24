@@ -124,7 +124,7 @@ const NavBar: React.FC<NavBarProps> = ({
                 fontWeight="bold" 
                 color="brand.500"
               >
-                TechSolutions
+                DeceneuLabs
               </Text>
             </Flex>
           </MotionBox>

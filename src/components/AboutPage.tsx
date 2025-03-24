@@ -41,14 +41,14 @@ const AboutPage: React.FC<AboutPageProps> = ({ language, hasVisited = false }) =
   const headingText = language === 'en' ? "About Us" : "Despre Noi";
   
   const introText = language === 'en'
-    ? "Learn about our mission and the team behind TechSolutions."
-    : "Află despre misiunea noastră și echipa din spatele TechSolutions.";
+    ? "Learn about our mission and the team behind DeceneuLabs."
+    : "Află despre misiunea noastră și echipa din spatele DeceneuLabs.";
     
   const whoWeAreTitle = language === 'en' ? "Who We Are" : "Cine Suntem";
   
   const whoWeAreText = language === 'en'
-    ? "TechSolutions was founded by two developers who bring extensive experience from industry-leading organizations like Amazon, Microsoft, Google, BP, as well as agile startups such as Superside and Noom. Our background enables us to blend enterprise-level expertise with startup-driven agility to deliver solutions that truly drive results."
-    : "TechSolutions a fost fondată de doi dezvoltatori care aduc experiență vastă din organizații de top precum Amazon, Microsoft, Google, BP, precum și startup-uri agile ca Superside și Noom. Experiența noastră ne permite să îmbinăm expertiza de nivel enterprise cu agilitatea specifică startup-urilor pentru a oferi soluții care generează rezultate reale.";
+    ? "DeceneuLabs was founded by two developers who bring extensive experience from industry-leading organizations like Amazon, Microsoft, Google, BP, as well as agile startups such as Superside and Noom. Our background enables us to blend enterprise-level expertise with startup-driven agility to deliver solutions that truly drive results."
+    : "DeceneuLabs a fost fondată de doi dezvoltatori care aduc experiență vastă din organizații de top precum Amazon, Microsoft, Google, BP, precum și startup-uri agile ca Superside și Noom. Experiența noastră ne permite să îmbinăm expertiza de nivel enterprise cu agilitatea specifică startup-urilor pentru a oferi soluții care generează rezultate reale.";
     
   const ourVisionTitle = language === 'en' ? "Our Vision" : "Viziunea Noastră";
   

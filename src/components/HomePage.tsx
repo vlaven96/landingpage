@@ -60,8 +60,8 @@ const HomePage: React.FC<HomePageProps> = ({ language, hasVisited = false, onNav
     : 'Automatizare • Integrare AI • Dezvoltare Web • Inginerie de Date';
     
   const introText = language === 'en'
-    ? 'At TechSolutions, our mission is simple: help small businesses embrace digital transformation with cutting-edge solutions that enhance efficiency, reduce costs, and unlock new opportunities. We\'re a small but highly experienced team based in Romania, with a global reach and a passion for innovation.'
-    : 'La TechSolutions, misiunea noastră este simplă: să ajutăm afacerile mici să adopte transformarea digitală cu soluții avansate care cresc eficiența, reduc costurile și deblochează noi oportunități. Suntem o echipă mică dar cu experiență vastă din România, cu acoperire globală și pasiune pentru inovație.';
+    ? 'At DeceneuLabs, our mission is simple: help small businesses embrace digital transformation with cutting-edge solutions that enhance efficiency, reduce costs, and unlock new opportunities. We\'re a small but highly experienced team based in Romania, with a global reach and a passion for innovation.'
+    : 'La DeceneuLabs, misiunea noastră este simplă: să ajutăm afacerile mici să adopte transformarea digitală cu soluții avansate care cresc eficiența, reduc costurile și deblochează noi oportunități. Suntem o echipă mică dar cu experiență vastă din România, cu acoperire globală și pasiune pentru inovație.';
     
   const ctaText = language === 'en'
     ? 'Ready to transform your business?'
