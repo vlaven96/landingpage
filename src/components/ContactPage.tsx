@@ -123,8 +123,8 @@ const ContactPage: React.FC<ContactPageProps> = ({ language, hasVisited = false 
     : "Pregătit să pornești în călătoria ta de transformare digitală? Ne-ar plăcea să aflăm despre viziunea ta și să îți arătăm cum te putem ajuta.";
   
   const contactInfo = {
-    phone: "+40 123 456 789",
-    email: "contact@DeceneuLabs.com",
+    phone: "+40 742 800 957",
+    email: "contact@deceneulabs.ro",
     location: language === 'en' ? "Bucharest, Romania (Serving clients worldwide)" : "București, România (Deservim clienți din întreaga lume)"
   };
   
