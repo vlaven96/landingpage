@@ -81,7 +81,7 @@ const CalendlyEmbed: React.FC = () => {
       {/* Replace with your actual Calendly URL in production */}
       <iframe
         ref={iframeRef}
-        src="https://calendly.com/your-calendly-url/30min"
+        src="https://calendly.com/deceneulabs/30min"
         width="100%"
         height="100%"
         frameBorder="0"
