@@ -80,7 +80,7 @@ const App: React.FC = () => {
   /**
    * 4) Language state (EN or RO)
    */
-  const [language, setLanguage] = useState<Language>('en');
+  const [language, setLanguage] = useState<Language>('ro');
 
   /**
    * Track which pages have already been visited to skip animations
