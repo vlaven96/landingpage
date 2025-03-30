@@ -286,7 +286,6 @@ const HomePage: React.FC<HomePageProps> = ({ language, hasVisited = false, onNav
                     transform: 'translateY(-5px)',
                     boxShadow: 'md'
                   }}
-                  transition="all 0.3s"
                 >
                   <HStack spacing={4} align="flex-start" mb={2}>
                     <Icon as={FaCheckCircle} color={accentColor} boxSize={5} mt={1} />
