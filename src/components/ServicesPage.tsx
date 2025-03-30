@@ -249,18 +249,6 @@ const ServicesPage: React.FC<ServicesPageProps> = ({ language, hasVisited = fals
                       ))}
                     </List>
                   </VStack>
-                  
-                  <Button 
-                    variant="outline" 
-                    colorScheme="brand"
-                    alignSelf="flex-start"
-                    mt={8}
-                    size="sm"
-                    opacity={0.8}
-                    _hover={{ opacity: 1 }}
-                  >
-                    {language === 'en' ? "Learn More" : "Află Mai Multe"}
-                  </Button>
                 </MotionBox>
               ))}
             </SimpleGrid>

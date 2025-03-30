@@ -1,5 +1,11 @@
+// App.tsx
 import React, { useState, useEffect } from 'react';
-import { Box, ChakraProvider, extendTheme } from '@chakra-ui/react';
+import {
+  Box,
+  ChakraProvider,
+  extendTheme,
+  ColorModeScript,    //  <-- Import this
+} from '@chakra-ui/react';
 import Navbar from './components/Navbar';
 import Chat from './components/Chat';
 import HomePage from './components/HomePage';
@@ -29,7 +35,7 @@ const theme = extendTheme({
       700: '#2d3748', // slightly lighter dark background
       800: '#1e2536', // medium dark background
       900: '#171923', // darkest background (for chat)
-    }
+    },
   },
   config: {
     initialColorMode: 'light',
@@ -94,7 +100,6 @@ const App: React.FC = () => {
 
   /**
    * Optional: auto-detect user language on mount
-   * (If you want to detect "ro" from the browser, uncomment)
    */
   /*
   useEffect(() => {
@@ -124,7 +129,11 @@ const App: React.FC = () => {
   /**
    * Called by the Chat whenever we need to unlock or create a page
    */
-  const unlockOrCreatePage = (pageId: PageIdentifier, pageData?: DynamicPageData, newLanguage?: Language) => {
+  const unlockOrCreatePage = (
+    pageId: PageIdentifier,
+    pageData?: DynamicPageData,
+    newLanguage?: Language
+  ) => {
     // If language change is requested, update it
     if (newLanguage && (newLanguage === 'en' || newLanguage === 'ro')) {
       setLanguage(newLanguage);
@@ -134,22 +143,22 @@ const App: React.FC = () => {
     if (pageData) {
       setDynamicPages((prev) => [...prev, pageData]);
     }
-    
+
     // Unlock if not in the list
     setUnlockedPages((prev) => (prev.includes(pageId) ? prev : [...prev, pageId]));
 
     // Track that this page has been visited
     if (!visitedPages.includes(pageId)) {
-      setVisitedPages(prev => [...prev, pageId]);
+      setVisitedPages((prev) => [...prev, pageId]);
     }
 
     // Navigate to the new/unlocked page
     setCurrentPage(pageId);
-    
+
     // Scroll to the top of the page
     window.scrollTo({
       top: 0,
-      behavior: 'smooth'
+      behavior: 'smooth',
     });
   };
 
@@ -160,9 +169,9 @@ const App: React.FC = () => {
     if (unlockedPages.includes(pageId)) {
       // Track that this page has been visited
       if (!visitedPages.includes(pageId)) {
-        setVisitedPages(prev => [...prev, pageId]);
+        setVisitedPages((prev) => [...prev, pageId]);
       }
-      
+
       setCurrentPage(pageId);
     }
   };
@@ -173,24 +182,27 @@ const App: React.FC = () => {
   const handlePageRequest = (targetPage: PageIdentifier) => {
     // Set message based on current page and language
     let message;
-    
+
     if (targetPage === 'services') {
-      message = language === 'en'
-        ? "We're directing you to our Services page."
-        : "Vă redirecționăm către pagina de servicii.";
+      message =
+        language === 'en'
+          ? "We're directing you to our Services page."
+          : 'Vă redirecționăm către pagina de servicii.';
     } else if (targetPage === 'contact') {
-      message = language === 'en'
-        ? "We're directing you to our Contact page."
-        : "Vă redirecționăm către pagina de contact.";
+      message =
+        language === 'en'
+          ? "We're directing you to our Contact page."
+          : 'Vă redirecționăm către pagina de contact.';
     } else {
-      message = language === 'en'
-        ? `We're directing you to the ${targetPage} page.`
-        : `Vă redirecționăm către pagina ${targetPage}.`;
+      message =
+        language === 'en'
+          ? `We're directing you to the ${targetPage} page.`
+          : `Vă redirecționăm către pagina ${targetPage}.`;
     }
-    
+
     // Set the message to be displayed in chat
     setChatSystemMessage(message);
-    
+
     // Navigate to the page after a small delay
     setTimeout(() => {
       // Use unlockOrCreatePage to ensure the page is unlocked
@@ -206,31 +218,34 @@ const App: React.FC = () => {
   };
 
   /**
-   * Renders the current page (home, about, or a dynamic one)
-   * We'll pass "language" to each subpage so it can display the correct text
+   * Renders the current page
    */
   const renderPage = () => {
     // Check if this page has been visited before
     const hasVisited = visitedPages.includes(currentPage);
-    
+
     if (isDefaultPage(currentPage)) {
       switch (currentPage) {
         case 'home':
-          return <HomePage 
-            language={language} 
-            hasVisited={hasVisited} 
-            onNavigate={handleNavigate}
-            onConsultation={handleConsultationRequest}
-            onPageRequest={handlePageRequest}
-          />;
+          return (
+            <HomePage
+              language={language}
+              hasVisited={hasVisited}
+              onNavigate={handleNavigate}
+              onConsultation={handleConsultationRequest}
+              onPageRequest={handlePageRequest}
+            />
+          );
         case 'about':
           return <AboutPage language={language} hasVisited={hasVisited} />;
         case 'services':
-          return <ServicesPage 
-            language={language} 
-            hasVisited={hasVisited} 
-            onConsultation={handleConsultationRequest}
-          />;
+          return (
+            <ServicesPage
+              language={language}
+              hasVisited={hasVisited}
+              onConsultation={handleConsultationRequest}
+            />
+          );
         case 'team':
           return <TeamPage language={language} hasVisited={hasVisited} />;
         case 'contact':
@@ -241,38 +256,41 @@ const App: React.FC = () => {
           return <HomePage language={language} hasVisited={hasVisited} />;
       }
     } else {
-      // It's dynamic: find the data
+      // It's a dynamic page
       const dp = dynamicPages.find((d) => d.id === currentPage);
       if (!dp) return <Box color="white">Error: Page Not Found</Box>;
-      // Show a custom dynamic page with same style
       return <DynamicPage page={dp} hasVisited={hasVisited} />;
     }
   };
 
   return (
-    <ChakraProvider theme={theme}>
-      <Box minH="100vh" position="relative">
-        <Navbar
-          unlockedPages={unlockedPages}
-          currentPage={currentPage}
-          onNavigate={handleNavigate}
-          dynamicPages={dynamicPages}
-          language={language}
-          onToggleLanguage={toggleLanguage}
-        />
-        <Box pb={{ base: "30vh", md: "30vh" }}>
-          {renderPage()}
-        </Box>
+    <>
+      {/* This script syncs the color mode before the app mounts */}
+      <ColorModeScript initialColorMode={theme.config.initialColorMode} />
 
-        {/* The Chat can unlock existing pages or create new ones */}
-        <Chat 
-          onUnlockOrCreatePage={unlockOrCreatePage} 
-          currentPage={currentPage}
-          systemMessage={chatSystemMessage}
-          onSystemMessageDisplayed={() => setChatSystemMessage(null)}
-        />
-      </Box>
-    </ChakraProvider>
+      {/* Wrap the entire UI in one ChakraProvider */}
+      <ChakraProvider theme={theme}>
+        <Box minH="100vh" position="relative">
+          <Navbar
+            unlockedPages={unlockedPages}
+            currentPage={currentPage}
+            onNavigate={handleNavigate}
+            dynamicPages={dynamicPages}
+            language={language}
+            onToggleLanguage={toggleLanguage}
+          />
+          <Box pb={{ base: '30vh', md: '30vh' }}>{renderPage()}</Box>
+
+          {/* The Chat can unlock existing pages or create new ones */}
+          <Chat
+            onUnlockOrCreatePage={unlockOrCreatePage}
+            currentPage={currentPage}
+            systemMessage={chatSystemMessage}
+            onSystemMessageDisplayed={() => setChatSystemMessage(null)}
+          />
+        </Box>
+      </ChakraProvider>
+    </>
   );
 };
 
