@@ -219,6 +219,11 @@ const NavBar: React.FC<NavBarProps> = ({
                 key={item.name}
                 variant="ghost"
                 justifyContent="flex-start"
+                width="100%"
+                textAlign="left"
+                px={4}
+                py={2}
+                borderRadius="0"
                 onClick={() => {
                   handleNavigate(item.name as PageIdentifier);
                   onToggle();
@@ -226,7 +231,8 @@ const NavBar: React.FC<NavBarProps> = ({
                 color={currentPage === item.name ? 'brand.500' : textColor}
                 fontWeight={currentPage === item.name ? 'semibold' : 'normal'}
                 _hover={{
-                  color: 'brand.500'
+                  color: 'brand.500',
+                  bg: useColorModeValue('gray.50', 'gray.700')
                 }}
               >
                 {getPageName(item.name as PageIdentifier)}

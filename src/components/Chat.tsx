@@ -184,6 +184,18 @@ const Chat: React.FC<ChatProps> = ({
     }
   };
 
+  // Function to scroll to bottom of messages
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+  
+  // Scroll to bottom when chat is opened or when new messages are added
+  useEffect(() => {
+    if (isFocused) {
+      scrollToBottom();
+    }
+  }, [isFocused, messages]); // Re-run when chat opens or messages change
+
   return (
     <MotionBox
       id="chat-container"

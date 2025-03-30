@@ -145,6 +145,12 @@ const App: React.FC = () => {
 
     // Navigate to the new/unlocked page
     setCurrentPage(pageId);
+    
+    // Scroll to the top of the page
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
   };
 
   /**
