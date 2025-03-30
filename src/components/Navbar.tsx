@@ -44,7 +44,8 @@ const NavBar: React.FC<NavBarProps> = ({
 }) => {
   const { isOpen, onToggle } = useDisclosure();
   const { colorMode, toggleColorMode } = useColorMode();
-  
+  console.log("colorMode");
+  console.log(colorMode);
   const bg = useColorModeValue('white', 'gray.800');
   const borderColor = useColorModeValue('gray.200', 'gray.700');
   const textColor = useColorModeValue('gray.800', 'white');
@@ -94,6 +95,9 @@ const NavBar: React.FC<NavBarProps> = ({
     // Then call the navigation function from props
     onNavigate(pageId);
   };
+
+  // Make sure the icon correctly reflects the current mode
+  const ColorModeIcon = colorMode === 'light' ? MoonIcon : SunIcon;
 
   return (
     <Box 
@@ -184,7 +188,7 @@ const NavBar: React.FC<NavBarProps> = ({
             >
               <IconButton
                 aria-label="Toggle color mode"
-                icon={colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
+                icon={<ColorModeIcon />}
                 onClick={toggleColorMode}
                 variant="ghost"
                 color={textColor}
